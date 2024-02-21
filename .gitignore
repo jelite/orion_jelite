@@ -7,6 +7,8 @@
 *.ncu-rep
 *.svg
 *.png
+*.run
+*.deb
 .DS_Store
 .idea/
 __pycache__/

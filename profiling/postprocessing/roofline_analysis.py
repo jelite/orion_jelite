@@ -4,7 +4,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--results_dir', type=str, required=True,
                         help='path to directory containing the profiling files')
-parser.add_argument('--ai_threshold', type=float, default=9.72,
+parser.add_argument('--ai_threshold', type=float, default=14.05,
                         help='arithmetic intensity that seperates compute from memory bound kernels')
 args = parser.parse_args()
 
@@ -43,9 +43,9 @@ for index, row in df_raw.iterrows():
     #print(add, mul, fma, cycles, bytes)
 
     if not isinstance(fma, float):
-        fma = float(fma.replace("'", ''))
-    add = float(add.replace("'", ''))
-    mul = float(mul.replace("'", ''))
+        fma = float(fma.replace("'", '').replace(",", ''))
+    add = float(add.replace("'", '').replace(",", ''))
+    mul = float(mul.replace("'", '').replace(",", ''))
 
 
     if add or mul or fma:
