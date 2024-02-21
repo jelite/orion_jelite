@@ -1,0 +1,2 @@
+nsight-compute-linux-2023.3.1.1-33474944.run
+nsight-systems-2023.4.1_2023.4.1.97-1_amd64.deb
