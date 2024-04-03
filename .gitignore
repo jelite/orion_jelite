@@ -24,7 +24,6 @@ config_files
 kernel_files.bak
 *.log
 *.txt
-exps
 *.h
 *.c
 *.rst
@@ -32,3 +31,4 @@ exps
 *.cxx
 *.cpp
 setup
+*.tar.gz
