@@ -19,12 +19,12 @@
 		"arch": "resnet50",
 		"kernel_file": "/root/orion/benchmarking/model_kernels/resnet50_4_fwd",
         "num_kernels": 175,
-        "num_iters": 9200,
+        "num_iters": 1000,
 		"args": {
 			"model_name": "resnet50",
 			"batchsize": 4,
-            "rps": 15,
-			"uniform": false,
+            "rps": 130,
+			"uniform": true,
 			"dummy_data": true,
 			"train": false
 		}

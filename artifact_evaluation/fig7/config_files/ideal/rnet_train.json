@@ -5,7 +5,7 @@
 		"additional_kernel_file": "/root/orion/benchmarking/model_kernels/resnet50_32_fb1",
         "num_kernels": 624,
         "additional_num_kernels": 946,
-        "num_iters": 200,
+        "num_iters": 30,
 		"args": {
 			"model_name": "resnet50",
 			"batchsize": 32,

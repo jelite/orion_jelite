@@ -31,12 +31,10 @@ class PyScheduler:
         reef_depth,
         hp_limit,
         update_start,
-        train,
+        train
     ):
-
         print(f"REEF IS {reef}, SEQUENTIAL IS {sequential}")
-        import time 
-        time.sleep(30)
+
         model_names_ctypes = [x.encode('utf-8') for x in model_names]
         lib_names = [x.encode('utf-8') for x in kernel_files]
 
@@ -55,11 +53,14 @@ class PyScheduler:
 
         self._sched_lib.argtypes = [c_void_p, c_int, POINTER(c_int), POINTER(c_char_p), POINTER(c_char_p), POINTER(c_int), POINTER(c_bool)]
 
+        print(model_names, lib_names, tids)
 
         self._sched_lib.setup(self._scheduler, self._num_clients, tids_ar, model_names_ctypes_ar, lib_names_ar, num_kernels_ar, num_iters_ar, train_ar, reef)
 
         num_clients = len(tids)
+        print(f"Num clients is {num_clients}")
 
+        print(f"before starting, profile is {profile}")
         timings=[]
 
         if run_eval:
@@ -88,6 +89,7 @@ class PyScheduler:
                 self._sched_lib.schedule(self._scheduler, num_clients, True, 0, False, 0, reef, sequential, reef_depth, hp_limit, update_start)
                 barriers[0].wait()
                 torch.cuda.synchronize()
+                print(f"Total time is {time.time()-start}")
 
         else:
             for i in range(num_iters[0]):

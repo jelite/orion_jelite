@@ -1,9 +1,19 @@
-import sys
+from argparse import ArgumentParser
 from profiling.benchmarks.vision_models import vision
 
-model_name = sys.argv[1]
-batch_size = int(sys.argv[2])
-do_eval = bool(sys.argv[3])
-profile = sys.argv[4] #ncu, nsys
-vision(model_name, batch_size, 0, do_eval, profile)
+argparser = ArgumentParser()
+argparser.add_argument("--model_name", type=str)
+argparser.add_argument("--batch_size", type=int)
+argparser.add_argument("--do_infer", action='store_true')
+argparser.add_argument("--do_additional", action='store_true')
+args = argparser.parse_args()
+
+print(f"do infer_ {args.do_infer}")
+
+vision(model_name=args.model_name, 
+        batch_size=args.batch_size, 
+        local_rank=0, 
+        do_eval=args.do_infer, 
+        is_additional=args.do_additional)
+
 print("end")

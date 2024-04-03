@@ -5,7 +5,7 @@ using namespace std;
 
 // globals
 void* klib;
-vector<vector<op_info>> op_info_vector;
+vector<vector<op_info>> iop_info_vector;
 int* fidx;
 int* num_client_kernels;
 int* num_client_max_iters;
@@ -237,7 +237,7 @@ int Scheduler::schedule_sequential(vector<func_record*> frecords, int num_client
 
 void* Scheduler::busy_wait_profile(int num_clients, int iter, bool warmup, int warmup_iters, bool reef, bool seq, int depth, int hp_limit, int update_start) {
 
-
+	printf("GIHYUN!\n");
 	DEBUG_PRINT("Entered busy_wait_profile! Num clients is %d\n", num_clients);
 	int start0 = 0;
 	int start1 = 0;
@@ -396,6 +396,7 @@ void* Scheduler::busy_wait_profile(int num_clients, int iter, bool warmup, int w
 				bool ready = true;
 				if (seq) {
 					if (event_ids[0] >= 1) {
+						printf("seq")
 						if (cudaEventQuery(*(events[0][event_ids[0]-1])) != cudaSuccess)
 							ready &= false;
 					}
@@ -403,6 +404,7 @@ void* Scheduler::busy_wait_profile(int num_clients, int iter, bool warmup, int w
 				else {
 					if (event_ids[i] >= 1) {
 						if (cudaEventQuery(*(events[i][event_ids[i]-1])) != cudaSuccess)
+							prinf("%d : EVENT", i);
 							ready &= false;
 					}
 				}

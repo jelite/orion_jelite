@@ -18,3 +18,17 @@ benchmarking/eval/*
 benchmarking/model_kernels/*
 benchmarking/results/*
 results
+exps/A
+exps/exp_data.bak
+config_files
+kernel_files.bak
+*.log
+*.txt
+exps
+*.h
+*.c
+*.rst
+*.cmake
+*.cxx
+*.cpp
+setup

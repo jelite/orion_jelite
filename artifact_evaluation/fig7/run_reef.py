@@ -4,15 +4,15 @@ import time
 num_runs = 3
 trace_files = [
     ("ResNet50", "ResNet50", "rnet_rnet"),
-    ("ResNet50", "MobileNetV2", "rnet_mnet"),
-    ("MobileNetV2", "ResNet50", "mnet_rnet"),
-    ("MobileNetV2", "MobileNetV2", "mnet_mnet"),
-    ("ResNet101", "ResNet50", "rnet101_rnet"),
-    ("ResNet101", "MobileNetV2", "rnet101_mnet"),
-    ("BERT", "ResNet50", "bert_rnet"),
-    ("BERT", "MobileNetV2", "bert_mnet"),
-    ("Transformer", "ResNet50", "trans_rnet"),
-    ("Transformer", "MobileNetV2", "trans_mnet"),
+    # ("ResNet50", "MobileNetV2", "rnet_mnet"),
+    # ("MobileNetV2", "ResNet50", "mnet_rnet"),
+    # ("MobileNetV2", "MobileNetV2", "mnet_mnet"),
+    # ("ResNet101", "ResNet50", "rnet101_rnet"),
+    # ("ResNet101", "MobileNetV2", "rnet101_mnet"),
+    # ("BERT", "ResNet50", "bert_rnet"),
+    # ("BERT", "MobileNetV2", "bert_mnet"),
+    # ("Transformer", "ResNet50", "trans_rnet"),
+    # ("Transformer", "MobileNetV2", "trans_mnet"),
 ]
 
 for (be, hp, f) in trace_files:

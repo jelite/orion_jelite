@@ -1,0 +1,7 @@
+/usr/local/cuda/bin/nsys profile --gpuctxsw true -w true -t cuda,nvtx,osrt,cudnn,cublas --cuda-graph-trace=node -o sleep_nsys --cudabacktrace=true --capture-range=cudaProfilerApi -f true -x true python sleep_test.py --long_pri 0 --short_pri 0 --short_iter 10
+# nsys profile --gpuctxsw true -w true -t cuda,nvtx,osrt,cudnn,cublas --cuda-graph-trace=node -o sleep_nsys_long --cudabacktrace=true --capture-range=cudaProfilerApi -f true -x true python sleep_test.py -1 0 10
+# nsys profile --gpuctxsw true -w true -t cuda,nvtx,osrt,cudnn,cublas --cuda-graph-trace=node -o sleep_nsys_short --cudabacktrace=true --capture-range=cudaProfilerApi -f true -x true python sleep_test.py 0 -1 10
+
+# nsys profile --gpuctxsw true -w true -t cuda,nvtx,osrt,cudnn,cublas --cuda-graph-trace=node -o sleep_nsys_100 --cudabacktrace=true --capture-range=cudaProfilerApi -f true -x true python sleep_test.py 0 0 100
+# nsys profile --gpuctxsw true -w true -t cuda,nvtx,osrt,cudnn,cublas --cuda-graph-trace=node -o sleep_nsys_long_100 --cudabacktrace=true --capture-range=cudaProfilerApi -f true -x true python sleep_test.py -1 0 100
+# nsys profile --gpuctxsw true -w true -t cuda,nvtx,osrt,cudnn,cublas --cuda-graph-trace=node -o sleep_nsys_short_100 --cudabacktrace=true --capture-range=cudaProfilerApi -f true -x true python sleep_test.py 0 -1 100

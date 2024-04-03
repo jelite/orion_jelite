@@ -1,18 +1,19 @@
 import os
 import time
 
-num_runs = 3
+# num_runs = 3
+num_runs = 1
 trace_files_hp = [
     ("ResNet50", "rnet"),
-    ("MobileNetV2", "mnet"),
+    # ("MobileNetV2", "mnet"),
 ]
 
 trace_files_be = [
     ("ResNet50", "rnet"),
-    ("MobileNetV2", "mnet"),
-    ("ResNet101", "rnet101"),
-    ("BERT", "bert"),
-    ("Transformer", "trans")
+    # ("MobileNetV2", "mnet"),
+    # ("ResNet101", "rnet101"),
+    # ("BERT", "bert"),
+    # ("Transformer", "trans")
 ]
 
 for (model, f) in trace_files_hp:

@@ -7,9 +7,9 @@ parser.add_argument('--results_dir', type=str, required=True,
                         help='path to directory containing the profiling files')
 parser.add_argument('--max_threads_sm', type=int, default=2048,
                         help='maximum number of threads that can be active in an SM')
-parser.add_argument('--max_blocks_sm', type=int, default=32,
+parser.add_argument('--max_blocks_sm', type=int, default=80,
                         help='maximum number of blocks that can be active in an SM')
-parser.add_argument('--max_shmem_sm', type=int, default=98304,
+parser.add_argument('--max_shmem_sm', type=int, default=65536,
                         help='maximum amount of shared memory (in bytes) per SM')
 parser.add_argument('--max_regs_sm', type=int, default=65536,
                         help='maximum number of registers per SM')

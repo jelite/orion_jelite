@@ -19,6 +19,8 @@ import threading
 import json
 from ctypes import *
 
+
+        
 def seed_everything(seed: int):
     import random, os
     import numpy as np
@@ -42,22 +44,6 @@ class DummyDataLoader():
     def __next__(self):
         return self.data, self.target
 
-class RealDataLoader():
-    def __init__(self, batchsize):
-        train_transform =  transforms.Compose([
-            transforms.RandomResizedCrop(224),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))]
-        )
-        train_dataset = \
-                datasets.ImageFolder("/mnt/data/home/fot/imagenet/imagenet-raw-euwest4",transform=train_transform)
-        self.train_loader = torch.utils.data.DataLoader(
-                train_dataset, batch_size=batchsize, num_workers=8)
-
-    def __iter__(self):
-        print("Inside iter")
-        return iter(self.train_loader)
 
 
 def block(backend_lib, it):
@@ -67,52 +53,45 @@ def block(backend_lib, it):
 def check_stop(backend_lib):
     return backend_lib.stop()
 
-
 def imagenet_loop(
     model_name,
     batchsize,
     train,
     num_iters,
     rps,
+    latency_bound,
     uniform,
     dummy_data,
     local_rank,
     barriers,
     client_barrier,
     tid,
-    input_file=''
+    warmup_event,
+    do_save,
+    trial,
+    end_event,
+    input_file='',
+    rps_start_barrier=None,
+    request_queue=None,
+    file_name=None
 ):
 
-    seed_everything(42)
-    print(model_name, batchsize, local_rank, barriers, tid)
+    seed_everything(time.time_ns() % 10**9)
+    
     backend_lib = cdll.LoadLibrary(os.path.expanduser('~') + "/orion/src/cuda_capture/libinttemp.so")
-    if rps > 0 and input_file=='':
-        if uniform:
-            sleep_times = [1/rps]*num_iters
-        else:
-            sleep_times = np.random.exponential(scale=1/rps, size=num_iters)
-    elif input_file != '':
-        with open(input_file) as f:
-                sleep_times = json.load(f)
-    else:
-        sleep_times = [0]*num_iters
 
-
-    print(f"SIZE is {len(sleep_times)}")
     barriers[0].wait()
-
     print("-------------- thread id:  ", threading.get_native_id())
 
-    if (train and tid==1):
+    if ((train=="train" or train=="be_infer") and tid==1):
         time.sleep(5)
 
-    #data = torch.rand([batchsize, 3, 224, 224]).contiguous()
-    #target = torch.ones([batchsize]).to(torch.long)
     model = models.__dict__[model_name](num_classes=1000)
     model = model.to(0)
 
-    if train:
+    if train=="train":
         model.train()
+        # optimizer =  torch.optim.Adam(model.parameters(), lr=0.1)
         optimizer =  torch.optim.SGD(model.parameters(), lr=0.1)
         criterion =  torch.nn.CrossEntropyLoss().to(local_rank)
     else:
@@ -120,19 +99,24 @@ def imagenet_loop(
 
     if dummy_data:
         train_loader = DummyDataLoader(batchsize)
-    else:
-        train_loader = RealDataLoader(batchsize)
 
     train_iter = enumerate(train_loader)
     batch_idx, batch = next(train_iter)
-
     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
     print("Enter loop!")
 
     #  open loop
     next_startup = time.time()
     open_loop = True
-
+    warmup_flag = True
+    
+    if train=="be_infer":
+        if rps > 0:
+            if uniform:
+                sleep_times = [1/rps]*(num_iters)
+            else:
+                sleep_times = np.random.exponential(scale=1/rps, size=num_iters)
+            
     if True:
         timings=[]
         for i in range(1):
@@ -141,101 +125,148 @@ def imagenet_loop(
             while batch_idx < num_iters:
                 start_iter = time.time()
 
-                #torch.cuda.profiler.cudart().cudaProfilerStart()
-                if train:
-                    #client_barrier.wait()
-                    print(f"Client {tid}, submit!, batch_idx is {batch_idx}")
-                    # if tid==0 and batch_idx==20:
-                    #     torch.cuda.profiler.cudart().cudaProfilerStart()
+                if train=="train":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
-                    optimizer.zero_grad()
-                    output = model(gpu_data)
-                    loss = criterion(output, gpu_target)
-                    loss.backward()
-                    optimizer.step()
-                    block(backend_lib, batch_idx)
-                    iter_time = time.time()-start_iter
-                    timings.append(iter_time)
-                    #print(f"Client {tid} finished! Wait! It took {timings[batch_idx]}")
-                    batch_idx, batch = next(train_iter)
-                    if (batch_idx == 1): # for backward
-                        barriers[0].wait()
-                    if batch_idx == 10: # for warmup
-                        barriers[0].wait()
-                        start = time.time()
+            
+                    if warmup_event.is_set():
+                        start_time = time.time()
+                        optimizer.zero_grad()
+                        output = model(gpu_data)
+                        loss = criterion(output, gpu_target)
+                        loss.backward()
+                        optimizer.step()
+                        block(backend_lib, batch_idx)
+                        torch.cuda.synchronize()
+                        end_time = time.time()
+                        batch_idx, batch = next(train_iter)
+                        if do_save:
+                            if not os.path.exists("/workspace/orion_project/orion/exps/train/"):
+                                os.system(f"mkdir /workspace/orion_project/orion/exps/train/")
+                            with open(f"/workspace/orion_project/orion/exps/train/{file_name}.txt",'a') as f:
+                                f.write(f"{(end_time-start_time)*1000}, {trial}\n")
+                    else:
+                        optimizer.zero_grad()
+                        output = model(gpu_data)
+                        loss = criterion(output, gpu_target)
+                        loss.backward()
+                        optimizer.step()
+                        block(backend_lib, batch_idx)
+                        batch_idx, batch = next(train_iter)
+                        if (batch_idx == 1): # for backward
+                            barriers[0].wait()
+                        if batch_idx == 10: # for warmup
+                            barriers[0].wait()
+                        
+                        
                     if check_stop(backend_lib):
-                        print("---- STOP!")
+                        print("----Train STOP! by orion")
                         break
-                    # if batch_idx==20:
-                    #     torch.cuda.profiler.cudart().cudaProfilerStart()
-                else:
+                    if end_event.is_set():
+                        print("----Train STOP! by event")
+                        break
+                elif train=="be_infer":
+                    gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
+            
+                    if warmup_event.is_set():
+                        print("BBBBBBBB")
+                        time.sleep(sleep_times[batch_idx])
+                        start_time = time.time()
+                        torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
+                        output = model(gpu_data)
+                        torch.cuda.nvtx.range_pop()
+                        block(backend_lib, batch_idx)
+                        torch.cuda.synchronize()
+                        end_time = time.time()
+                        batch_idx, batch = next(train_iter)
+                        if do_save:
+                            if not os.path.exists("/workspace/orion_project/orion/exps/be_infer/"):
+                                os.system(f"mkdir /workspace/orion_project/orion/exps/be_infer/")
+                            with open(f"/workspace/orion_project/orion/exps/be_infer/{file_name}.txt",'a') as f:
+                                f.write(f"{(end_time-start_time)*1000}, {trial}\n")
+                    else:
+                        print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
+                        torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
+                        output = model(gpu_data)
+                        torch.cuda.nvtx.range_pop()
+                        block(backend_lib, batch_idx)
+                        batch_idx, batch = next(train_iter)
+                        if (batch_idx == 1): # for backward
+                            barriers[0].wait()
+                        if batch_idx == 10: # for warmup
+                            barriers[0].wait()
+                        
+                    if check_stop(backend_lib):
+                        print("----be_infer STOP! by orion")
+                        break
+                    if end_event.is_set():
+                        print("----be_infer STOP! by event")
+                        break
+                    
+                else: #infer
                     with torch.no_grad():
-                        cur_time = time.time()
-                        #### OPEN LOOP ####
-                        if open_loop:
-                            if (cur_time >= next_startup):
-                                print(f"Client {tid}, submit!, batch_idx is {batch_idx}")
-                                if batch_idx==100:
-                                    torch.cuda.profiler.cudart().cudaProfilerStart()
-                                gpu_data = batch[0].to(local_rank)
+                        if not (batch_idx-200) % 500 :
+                            print(batch_idx - 200)
+                        if batch_idx == 200:
+                            warmup_flag = False
+                            request_start = time.time()
+                        if warmup_flag: 
+                            output = model(gpu_data)
+                            
+                            block(backend_lib, batch_idx)
+                            batch_idx,batch = next(train_iter)
+                            
+                            if (batch_idx == 1 or (batch_idx == 10)):
+                                barriers[0].wait()
+                        else:
+                            queuing_delay = 0
+                            is_passed = False
+                            if batch_idx == 200:
+                                rps_start_barrier.wait()
+                                warmup_event.set()
+                            req_ = request_queue.get()
+                            
+                            start_time = time.time()
+                            if batch_idx != 200:
+                                queuing_delay = (start_time - req_.start_time)*1000
+                                
+                            if queuing_delay < latency_bound:
                                 output = model(gpu_data)
                                 block(backend_lib, batch_idx)
-                                # if batch_idx==250:
-                                #     torch.cuda.profiler.cudart().cudaProfilerStop()
-                                req_time = time.time()-next_startup
-                                timings.append(req_time)
-                                print(f"Client {tid} finished! Wait! It took {req_time}")
-                                if batch_idx>=10:
-                                    next_startup += sleep_times[batch_idx]
-                                else:
-                                    next_startup = time.time()
-                                batch_idx,batch = next(train_iter)
-                                if (batch_idx == 1 or (batch_idx == 10)):
-                                    barriers[0].wait()
-                                    # hp starts after
-                                    if (batch_idx==10):
-                                        next_startup = time.time()
-                                        start = time.time()
-                                dur = next_startup-time.time()
-                                if (dur>0):
-                                    time.sleep(dur)
-                                if check_stop(backend_lib):
-                                    print("---- STOP!")
-                                    break
-                        else:
-                            #### CLOSED LOOP ####
-                            print(f"Client {tid}, submit!, batch_idx is {batch_idx}")
-                            gpu_data = batch[0].to(local_rank)
-                            output = model(gpu_data)
-                            block(backend_lib, batch_idx)
-                            print(f"Client {tid} finished! Wait!")
+                            else:
+                                is_passed = True
+                                block(backend_lib, -1)
+                            torch.cuda.synchronize()        
+                            end_time = time.time()
                             batch_idx,batch = next(train_iter)
-                            if ((batch_idx == 1) or (batch_idx == 10)):
+                            if (batch_idx == 1 or (batch_idx == 10)):
                                 barriers[0].wait()
+                            if(batch_idx == num_iters-1):
+                                request_end = time.time()
+                                if do_save:
+                                    with open(f"/workspace/orion_project/orion/exps/{file_name}_total.log",'a') as f:
+                                        wall_clock_time = request_end - request_start
+                                        f.write(f"{wall_clock_time}, {trial}\n")
+                                    
+                            req_.end_time = end_time
+                            if do_save:
+                                with open(f"/workspace/orion_project/orion/exps/{file_name}.txt",'a') as f:
+                                    if is_passed:
+                                        f.write(f"passed, {queuing_delay}, {trial}\n")
+                                    else:
+                                        f.write(f"{req_.get_duration()},{(end_time-start_time)*1000}, {queuing_delay}, {trial}\n")
+                            
+                                    
+                            if check_stop(backend_lib):
+                                print("----Infer STOP! by orion")
+                                break
+                            if end_event.is_set():
+                                print("----Infer STOP! by event")
+                                break
+                            
+            if not end_event.is_set():
+                print(f"end_event set by {tid}")
+                end_event.set()
+            
 
-        print(f"Client {tid} at barrier!")
-        barriers[0].wait()
-        total_time = time.time() - start
-
-        timings = timings[10:]
-        timings = sorted(timings)
-
-        if not train and len(timings)>0:
-            p50 = np.percentile(timings, 50)
-            p95 = np.percentile(timings, 95)
-            p99 = np.percentile(timings, 99)
-            print(f"Client {tid} finished! p50: {p50} sec, p95: {p95} sec, p99: {p99} sec")
-            data = {
-                'p50_latency': p50*1000,
-                'p95_latency': p95*1000,
-                'p99_latency': p99*1000,
-                'throughput': (batch_idx-10)/total_time
-            }
-        else:
-            data = {
-                'throughput': (batch_idx-10)/total_time
-            }
-        with open(f'client_{tid}.json', 'w') as f:
-            json.dump(data, f)
-
+        # barriers[0].wait()
         print("Finished! Ready to join!")
