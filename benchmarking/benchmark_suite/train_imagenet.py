@@ -140,9 +140,9 @@ def imagenet_loop(
                         end_time = time.time()
                         batch_idx, batch = next(train_iter)
                         if do_save:
-                            if not os.path.exists("/workspace/orion_project/orion/exps/train/"):
-                                os.system(f"mkdir /workspace/orion_project/orion/exps/train/")
-                            with open(f"/workspace/orion_project/orion/exps/train/{file_name}.txt",'a') as f:
+                            if not os.path.exists("/workspace/exps/train/"):
+                                os.system(f"mkdir /workspace/exps/train/")
+                            with open(f"/workspace/exps/train/{file_name}.txt",'a') as f:
                                 f.write(f"{(end_time-start_time)*1000}, {trial}\n")
                     else:
                         optimizer.zero_grad()
@@ -179,9 +179,9 @@ def imagenet_loop(
                         end_time = time.time()
                         batch_idx, batch = next(train_iter)
                         if do_save:
-                            if not os.path.exists("/workspace/orion_project/orion/exps/be_infer/"):
-                                os.system(f"mkdir /workspace/orion_project/orion/exps/be_infer/")
-                            with open(f"/workspace/orion_project/orion/exps/be_infer/{file_name}.txt",'a') as f:
+                            if not os.path.exists("/workspace/exps/be_infer/"):
+                                os.system(f"mkdir /workspace/exps/be_infer/")
+                            with open(f"/workspace/exps/be_infer/{file_name}.txt",'a') as f:
                                 f.write(f"{(end_time-start_time)*1000}, {trial}\n")
                     else:
                         print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
@@ -243,13 +243,13 @@ def imagenet_loop(
                             if(batch_idx == num_iters-1):
                                 request_end = time.time()
                                 if do_save:
-                                    with open(f"/workspace/orion_project/orion/exps/{file_name}_total.log",'a') as f:
+                                    with open(f"/workspace/exps/{file_name}_total.log",'a') as f:
                                         wall_clock_time = request_end - request_start
                                         f.write(f"{wall_clock_time}, {trial}\n")
                                     
                             req_.end_time = end_time
                             if do_save:
-                                with open(f"/workspace/orion_project/orion/exps/{file_name}.txt",'a') as f:
+                                with open(f"/workspace/exps/{file_name}.txt",'a') as f:
                                     if is_passed:
                                         f.write(f"passed, {queuing_delay}, {trial}\n")
                                     else:
@@ -268,5 +268,5 @@ def imagenet_loop(
                 end_event.set()
             
 
-        # barriers[0].wait()
+        barriers[0].wait()
         print("Finished! Ready to join!")

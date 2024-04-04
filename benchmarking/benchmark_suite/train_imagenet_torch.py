@@ -160,32 +160,7 @@ def imagenet_loop(model_name, batchsize, train, default, num_iters, rps, uniform
                             if (batch_idx==10):
                                 starttime = time.time()
                                 next_startup = time.time()
-
-                        ###### CLOSED LOOP #####
-                        # print(f"submit!, batch_idx is {batch_idx}")
-                        # gpu_data = batch[0].to(local_rank)
-                        # output = model(gpu_data)
-                        # s.synchronize()
-                        # iter_time = time.time()-startiter
-                        # timings.append(iter_time)
-                        # print(f"It took {iter_time} sec")
-                        # batch_idx,batch = next(train_iter)
-
-                #iter_time = time.time()-startiter
-                #timings.append(iter_time)
-
-                #time.sleep(sleep_times[batch_idx])
-                #print(f"{batch_idx} finished, took {iter_time} sec, now sleep for {sleep_times[batch_idx]} sec")
-
-                #v = time.time()
-
-                #batch_idx += 1
-                #print(f"It took {time.time()-v}")
-
-                # if batch_idx < num_iters-1:
-                #     start_barriers[tid].wait()
-
-
+   
     timings = timings[10:]
     p50 = np.percentile(timings, 50)
     p95 = np.percentile(timings, 95)
