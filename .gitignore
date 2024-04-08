@@ -20,8 +20,8 @@ benchmarking/results/*
 results
 exps/A
 exps/exp_data.bak
-config_files
 kernel_files.bak
+*.json
 *.log
 *.txt
 *.h

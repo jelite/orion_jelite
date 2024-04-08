@@ -3,12 +3,10 @@ import os
 # models = ["resnet50", "mobilenet_v3_large", "vit_l_16", "densenet121", "efficientnet_v2_m"]
 # models = ["resnet50", "mobilenet_v3_large", "vit_l_16", "efficientnet_v2_m", "swin_b"]
 # alias = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
-alias = ["rnet", "mnet", "vit", "enet", "swin"]
-inferxinfer_alias = ["rnet", "mnet", "enet"]
 # models = ["densenet121"]
 # alias = ["dnet"]
-models_t = ["mnet"]
-models_i = ["dnet"]
+models_t = ["rnet", "mnet", "vit", "enet", "swin"]
+models_i = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
 
 is_be_infer = False
 
@@ -21,7 +19,8 @@ for trial in range(1):
                         max_be_duration = 100000
                     else:
                         max_be_duration = 160000
-
+                    train = "rnet"
+                    infer = 'mnet'
                     running_pair = f"{train}_{infer}"
                     print(f"{running_pair} is running")
                     if is_be_infer:
@@ -34,8 +33,9 @@ for trial in range(1):
                     os.system(f"LD_PRELOAD='{os.path.expanduser( '~' )}/orion/src/cuda_capture/libinttemp.so' python3.8 \
                                 ../benchmarking/launch_jobs.py --algo orion --config_file {file_path} --orion_max_be_duration {max_be_duration} \
                                       --do_save --trial {trial}")
+                    quit()
             print("ALL SUCCESS")
-            quit()
+        quit()
                     
 # for trial in range(5):
 #     for rps in [1,2]:
