@@ -32,3 +32,4 @@ kernel_files.bak
 *.cpp
 setup
 *.tar.gz
+exps/kernel_files/*
