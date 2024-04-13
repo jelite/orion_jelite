@@ -26,7 +26,7 @@ for train_idx, train_name in enumerate(models):
         else:
             infer_batch = 8
         
-        levels = [[19.71, 28.35, 106.81, 13.84, 10.5, 21.61],[59.12, 85.05, 320.43, 41.51, 31.49, 64.83]]
+        levels = [[19.71, 28.35, 106.81, 13.84, 10.5, 21.61],[59.13, 85.05, 320.43, 41.52, 31.49, 64.83]]
         latency_bounds = [100, 200]
         for idx, level in enumerate(levels):
             for latency_bound in latency_bounds:

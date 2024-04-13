@@ -7,20 +7,19 @@ import os
 # alias = ["dnet"]
 models_t = ["rnet", "mnet", "vit", "enet", "swin"]
 models_i = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
-
 is_be_infer = False
 
 for trial in range(1):
     for rps in [1]:
-        for slo in [100]:
+        for slo in [100, 200]:
             for train in models_t:
                 for infer in models_i:
                     if "mnet" in infer:
                         max_be_duration = 100000
+                    if "vit" in infer:
+                        max_be_duration = 320000
                     else:
                         max_be_duration = 160000
-                    train = "rnet"
-                    infer = 'mnet'
                     running_pair = f"{train}_{infer}"
                     print(f"{running_pair} is running")
                     if is_be_infer:
@@ -33,9 +32,7 @@ for trial in range(1):
                     os.system(f"LD_PRELOAD='{os.path.expanduser( '~' )}/orion/src/cuda_capture/libinttemp.so' python3.8 \
                                 ../benchmarking/launch_jobs.py --algo orion --config_file {file_path} --orion_max_be_duration {max_be_duration} \
                                       --do_save --trial {trial}")
-                    quit()
-            print("ALL SUCCESS")
-        quit()
+        print(f"SLO{slo}ms rps_level{rps} Done")
                     
 # for trial in range(5):
 #     for rps in [1,2]:

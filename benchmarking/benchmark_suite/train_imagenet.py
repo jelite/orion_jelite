@@ -204,7 +204,6 @@ def imagenet_loop(
                     
                 else: #infer
                     with torch.no_grad():
-                        print(f"{batch_idx - 200} batch")
                         if not (batch_idx-200) % 500 :
                             print(batch_idx - 200)
                         if batch_idx == 200:
@@ -230,11 +229,9 @@ def imagenet_loop(
                                 queuing_delay = (start_time - req_.start_time)*1000
                                 
                             if queuing_delay < latency_bound:
-                                print("O.K.")
                                 output = model(gpu_data)
                                 block(backend_lib, batch_idx)
                             else:
-                                print("Passed!")
                                 is_passed = True
                                 block(backend_lib, -1)
                             torch.cuda.synchronize()        
@@ -270,5 +267,5 @@ def imagenet_loop(
                 end_event.set()
             
 
-        barriers[0].wait()
+        # barriers[0].wait()
         print("Finished! Ready to join!")
