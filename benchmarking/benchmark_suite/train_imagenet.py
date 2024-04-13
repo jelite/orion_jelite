@@ -267,5 +267,5 @@ def imagenet_loop(
                 end_event.set()
             
 
-        # barriers[0].wait()
+        barriers[0].wait()
         print("Finished! Ready to join!")

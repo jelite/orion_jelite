@@ -10,8 +10,8 @@ models_i = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
 is_be_infer = False
 
 for trial in range(1):
-    for rps in [1]:
-        for slo in [100, 200]:
+    for rps in [2]:
+        for slo in [100]:
             for train in models_t:
                 for infer in models_i:
                     if "mnet" in infer:
