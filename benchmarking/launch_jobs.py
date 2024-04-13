@@ -7,6 +7,9 @@ import os
 import sys
 import numpy as np
 
+import json
+
+
 from torchvision import models
 import torch
 import torch.multiprocessing as mp
@@ -155,13 +158,30 @@ def launch_jobs(config_dict_list, input_args, run_eval):
     print("sche start")
     sched_thread.start()
 
+
+
+    path = f"./overall_test/arrival_times-rps{rps}-reqs{num_iters[1]-200}-num{input_args.trial}.json"
+
+
+    with open(path, "r") as json_file:
+        json_data = json.load(json_file)
+
+
+
+
     rps_start_barrier.wait()
-    print("RPS READY!!!")
-    for id in range(num_iters[1]-200):
+    print(f"RPS{rps} READY!!!")
+    for idx, data in enumerate(json_data):
         st_time = time.time()
-        req = Request(id, st_time)
+        req = Request(idx, st_time)
         request_queue.put(req)
-        time.sleep(sleep_times[id])
+        time.sleep(float(data))
+
+    # for id in range(num_iters[1]-200):
+    #     st_time = time.time()
+    #     req = Request(id, st_time)
+    #     request_queue.put(req)
+    #     time.sleep(sleep_times[id])
         
     for thread in threads:
         thread.join()
