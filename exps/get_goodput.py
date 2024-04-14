@@ -12,7 +12,7 @@ args = argparser.parse_args()
 
 latency_bound = args.latency_bound
 
-for file in glob.glob(f"./exp_data/*.txt"):
+for file in glob.glob(f"./*.txt"):
     if str(latency_bound) not in file:
         continue
     infer = file.split("x")[1]
@@ -38,5 +38,5 @@ for file in glob.glob(f"./exp_data/*.txt"):
     with open(f"{file[:-4]}_total.log", 'r') as f:
         total_time = float(f.readline().split(",")[0])
         # print(f"{file}\t{total_time}\t{success}\t{passed}\t{2000-success-passed}")
-        print(f"{file},{total_time},{success},{passed},{2000-success-passed}")
-    # print(f"{file}\t{success/total_time}")
+        # print(f"{file},{total_time},{success},{passed},{2000-success-passed}")
+    print(f"{file}\t{success/total_time}")

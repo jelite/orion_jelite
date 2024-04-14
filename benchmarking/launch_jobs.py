@@ -39,6 +39,7 @@ function_dict = {
     "efficientnet_v2_m":imagenet_loop,
     "densenet121":imagenet_loop,
     "vit_l_16":imagenet_loop,
+    "vit_b_16":imagenet_loop,
     "swin_b":imagenet_loop
 }
 
@@ -159,22 +160,24 @@ def launch_jobs(config_dict_list, input_args, run_eval):
     sched_thread.start()
 
 
-
     path = f"/workspace/benchmarking/overall_test/arrival_times-rps{rps}-reqs{num_iters[1]-200}-num{input_args.trial}.json"
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     with open(path, "r") as json_file:
         json_data = json.load(json_file)
 
     rps_start_barrier.wait()
     print(f"RPS-{rps} READY!!!")
+    st_time = time.time()
+    req = Request(0, st_time)
+    request_queue.put(req)
+
     for idx, data in enumerate(json_data):
+        time.sleep(float(data))
         st_time = time.time()
         req = Request(idx, st_time)
         request_queue.put(req)
-        time.sleep(float(data))
-
-    rps_start_barrier.wait()
+        
+    # rps_start_barrier.wait()
     # for id in range(num_iters[1]-200):
     #     st_time = time.time()
     #     req = Request(id, st_time)

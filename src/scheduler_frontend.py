@@ -34,7 +34,7 @@ class PyScheduler:
         train,
     ):
 
-        print(f"REEF IS {reef}, SEQUENTIAL IS {sequential}")
+        print(f"@REEF IS {reef}, SEQUENTIAL IS {sequential}")
         import time 
         time.sleep(30)
         model_names_ctypes = [x.encode('utf-8') for x in model_names]
@@ -54,14 +54,13 @@ class PyScheduler:
         train_ar = BoolAr(*train)
 
         self._sched_lib.argtypes = [c_void_p, c_int, POINTER(c_int), POINTER(c_char_p), POINTER(c_char_p), POINTER(c_int), POINTER(c_bool)]
-
+        print("????")
 
         self._sched_lib.setup(self._scheduler, self._num_clients, tids_ar, model_names_ctypes_ar, lib_names_ar, num_kernels_ar, num_iters_ar, train_ar, reef)
 
         num_clients = len(tids)
 
         timings=[]
-
         if run_eval:
             if profile:
                 barriers[0].wait()

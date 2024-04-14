@@ -9,9 +9,9 @@ def get_kernel_num(file_name):
 
 # models = ["resnet50", "mobilenet_v3_large", "efficientnet_v2_m", \
 #           "vit_l_16", "swin_b", "densenet121"]
-models = ["resnet50", "mobilenet_v3_large", "vit_l_16", "efficientnet_v2_m", "swin_b", "densenet121"]
+models = ["resnet50", "mobilenet_v3_large", "vit_b_16", "vit_l_16", "efficientnet_v2_m", "swin_b", "densenet121"]
 # alias = ["rnet", "mnet", "enet", "vit", "swin", "dnet"]
-alias = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
+alias = ["rnet", "mnet", "vit_b", "vit_l", "enet", "swin", "dnet"]
 
 
 #for train x infer
@@ -26,7 +26,7 @@ for train_idx, train_name in enumerate(models):
         else:
             infer_batch = 8
         
-        levels = [[19.71, 28.35, 106.81, 13.84, 10.5, 21.61],[59.13, 85.05, 320.43, 41.52, 31.49, 64.83]]
+        levels = [[19.71, 28.35, 106.81, 13.84, 10.5, 21.61, 30.67],[59.13, 85.05, 320.43, 41.52, 31.5, 64.83, 92.01]]
         latency_bounds = [100, 200]
         for idx, level in enumerate(levels):
             for latency_bound in latency_bounds:
@@ -38,10 +38,12 @@ for train_idx, train_name in enumerate(models):
                     rps = level[2] 
                 if "effi" in infer_name:
                     rps = level[3]  
-                if "vit" in infer_name:
+                if "vit_l" in infer_name:
                     rps = level[4]
                 if "swin" in infer_name:
                     rps = level[5]
+                if "vit_b" in infer_name:
+                    rps = level[6]
                     
                 train_kernel_file = f"/workspace/exps/kernel_files/{train_name}_b{train_batch}_train"
                 train_additional_kernel_file = f"/workspace/exps/kernel_files/{train_name}_b{train_batch}_additional_train"

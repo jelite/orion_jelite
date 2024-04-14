@@ -127,8 +127,9 @@ def imagenet_loop(
 
                 if train=="train":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
-            
+                    print("TRAIN!!!!")
                     if warmup_event.is_set():
+                        print("train sssss")
                         start_time = time.time()
                         optimizer.zero_grad()
                         output = model(gpu_data)
@@ -136,6 +137,7 @@ def imagenet_loop(
                         loss.backward()
                         optimizer.step()
                         block(backend_lib, batch_idx)
+                        print("train_eeeeeee")
                         torch.cuda.synchronize()
                         end_time = time.time()
                         batch_idx, batch = next(train_iter)
@@ -145,12 +147,14 @@ def imagenet_loop(
                             with open(f"/workspace/exps/train/{file_name}.txt",'a') as f:
                                 f.write(f"{(end_time-start_time)*1000}, {trial}\n")
                     else:
+                        print("train2 sssss")
                         optimizer.zero_grad()
                         output = model(gpu_data)
                         loss = criterion(output, gpu_target)
                         loss.backward()
                         optimizer.step()
                         block(backend_lib, batch_idx)
+                        print("train2_eeeeeee")
                         batch_idx, batch = next(train_iter)
                         if (batch_idx == 1): # for backward
                             barriers[0].wait()
@@ -204,15 +208,17 @@ def imagenet_loop(
                     
                 else: #infer
                     with torch.no_grad():
-                        if not (batch_idx-200) % 500 :
+                        if not (batch_idx-200) % 10 :
                             print(batch_idx - 200)
                         if batch_idx == 200:
                             warmup_flag = False
                             request_start = time.time()
                         if warmup_flag: 
+                            print("infer s")
                             output = model(gpu_data)
-                            
                             block(backend_lib, batch_idx)
+                            print("infer e")
+                            
                             batch_idx,batch = next(train_iter)
                             
                             if (batch_idx == 1 or (batch_idx == 10)):
@@ -267,5 +273,5 @@ def imagenet_loop(
                 end_event.set()
             
 
-        barriers[0].wait()
+        # barriers[0].wait()
         print("Finished! Ready to join!")
