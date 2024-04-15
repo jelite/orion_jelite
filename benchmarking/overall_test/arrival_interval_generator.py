@@ -17,6 +17,6 @@ if __name__ == "__main__":
 
     arrival_times = np.random.exponential(scale=1/args.rps, size=args.num_reqs-1).tolist()
 
-    fname = f'arrival_times-rps{args.rps}-reqs{args.num_reqs}-num{args.num}.json'
+    fname = f'arrival_intervals-rps{args.rps}-reqs{args.num_reqs}-num{args.num}.json'
     with open(fname, "w") as f:
         json.dump(arrival_times, f, indent=4)

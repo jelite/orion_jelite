@@ -159,8 +159,7 @@ def launch_jobs(config_dict_list, input_args, run_eval):
     print("sche start")
     sched_thread.start()
 
-
-    path = f"/workspace/benchmarking/overall_test/arrival_times-rps{rps}-reqs{num_iters[1]-200}-num{input_args.trial}.json"
+    path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals-rps{rps}-reqs{num_iters[1]-200}-num{input_args.trial}.json"
 
     with open(path, "r") as json_file:
         json_data = json.load(json_file)

@@ -1,18 +1,12 @@
 import os
 
-# models = ["resnet50", "mobilenet_v3_large", "vit_l_16", "densenet121", "efficientnet_v2_m"]
-# models = ["resnet50", "mobilenet_v3_large", "vit_l_16", "efficientnet_v2_m", "swin_b"]
-# alias = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
-# models = ["densenet121"]
-# alias = ["dnet"]
-models_t = ["rnet", "mnet", "enet", "swin", "vit_b"]
-models_i = ["rnet", "mnet", "vit", "enet", "swin", "dnet"]
-models_i = ["vit_b"]
+models_t = ["rnet", "mnet", "enet", "swin", "vit_l"]
+models_i = ["rnet", "mnet", "enet", "swin", "vit_l", "dnet"]
 is_be_infer = False
 
 for trial in range(1):
     for rps in [1, 2]:
-        for slo in [100, 200]:
+        for slo in [300]:
             for train in models_t:
                 for infer in models_i:
                     if "mnet" in infer:
@@ -22,7 +16,7 @@ for trial in range(1):
                     else:
                         max_be_duration = 160000
                     running_pair = f"{train}_{infer}"
-                    print(f"{running_pair} is running")
+                    print(f"{running_pair} {rps} {slo} is running")
                     if is_be_infer:
                         file_path = f"config_files/be_infer/rps_level{rps}_{slo}ms/{running_pair}.json"
                     else:

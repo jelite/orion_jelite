@@ -100,13 +100,19 @@ if __name__ == "__main__":
     hp_req_q = gpu_manager.hp_req_q
     resp_q = gpu_manager.resp_q
 
+    # For warmup
     warmup_infer_req = copy.deepcopy(infer_req)
     warmup_infer_req["warmup"] = True
     warmup_infer_req["enqueue_time"] = time.time() * 1000.
     warmup_infer_req["be_info"] = None
     hp_req_q.put(warmup_infer_req)
     resp = resp_q.get()
-    print(json.dumps(resp, indent=4))
+
+    # For profiling
+    infer_req["enqueue_time"] = time.time() * 1000.
+    infer_req["be_info"] = train_req
+    hp_req_q.put(infer_req)
+    resp = resp_q.get()
 
     latency_bound = gpu_manager.latency_bound
     exp_dirname = f"bound{latency_bound:>.4f}-{train_req['model']}-b{train_req['bs']}-{train_req['loss_func']}-{train_req['optimizer']}X{infer_req['model']}-b{infer_req['bs']}-{args.dist}-rps{args.rps}"
@@ -144,17 +150,12 @@ if __name__ == "__main__":
     if dist_type == "uniform":
         sleep_times = [1/rps] * num_infer_reqs
     elif dist_type == "poisson":
-        sleep_times = np.random.exponential(scale=1/rps, size=num_infer_reqs-1)
+        arrival_times_fname = f'/workspace/gmanager/test/overall_test/arrival_intervals/arrival_intervals-rps{rps}-reqs{num_infer_reqs}-num{args.exp_num}.json'
+        with open(arrival_times_fname, "r") as f:
+            sleep_times = json.load(f)
     
-    # For profiling
-    infer_req["enqueue_time"] = time.time() * 1000.
-    infer_req["be_info"] = gpu_manager.running_be_info
-    hp_req_q.put(infer_req)
-    resp = resp_q.get()
-
     start_time = None
     for req in range(num_infer_reqs):
-        # print(f"sleep_time : {sleep_times[req] * 1000:>.2f} ms")
         if req > 0:
             time.sleep(sleep_times[req-1])
         infer_req["enqueue_time"] = time.time() * 1000.

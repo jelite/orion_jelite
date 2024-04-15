@@ -25,9 +25,9 @@ for train_idx, train_name in enumerate(models):
             infer_batch = 1
         else:
             infer_batch = 8
-        
-        levels = [[19.71, 28.35, 106.81, 13.84, 10.5, 21.61, 30.67],[59.13, 85.05, 320.43, 41.52, 31.5, 64.83, 92.01]]
-        latency_bounds = [100, 200]
+        # [19.71, 28.35, 106.81, 13.84, 10.5, 21.61, 30.67]
+        levels = [[29.56, 42.53, 160.22, 20.75, 15.75, 32.42, 46.01],[59.13, 85.05, 320.43, 41.52, 31.5, 64.83, 92.01]]
+        latency_bounds = [100, 200, 300]
         for idx, level in enumerate(levels):
             for latency_bound in latency_bounds:
                 if "dense" in infer_name:

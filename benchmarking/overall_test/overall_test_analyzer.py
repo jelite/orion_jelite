@@ -13,23 +13,27 @@ if __name__ == "__main__":
     parser.add_argument("--exp", type=str)
     args = parser.parse_args()
 
-    latency_bound, train_model, train_bs, _, _, infer_model, infer_bs, _, rps = parse.parse("bound{}-{}-b{}-{}-{}X{}-b{}-{}-rps{}", args.exp).fixed
-    latency_bound = float(latency_bound)
+    latency_bound_str, train_model, train_bs, loss_func, optim, infer_model, infer_bs, dist, rps = parse.parse("bound{}-{}-b{}-{}-{}X{}-b{}-{}-rps{}", args.exp).fixed
+    latency_bound = float(latency_bound_str)
     train_bs = int(train_bs)
     infer_bs = int(infer_bs)
-    if "vit" in train_model or "swin" in train_model:
-        train_bs = 64
-    if "vit" in infer_model or "swin" in infer_model:
-        infer_bs = 8
-
     if args.type == "ours":
         result_dirname = os.path.join(os.path.expanduser("~"), ".results", f"ours-train-b{train_bs}Xinfer-b{infer_bs}")
     else:
         result_dirname = os.path.join(os.path.expanduser("~"), ".results", f"mps-train-b{train_bs}Xinfer-b{infer_bs}")
     num_result_dirs = len(glob.glob(f"{result_dirname}*"))
 
+    if "vit" in train_model or "swin" in train_model:
+        train_bs = 8
+    if "vit" in infer_model or "swin" in infer_model:
+        infer_bs = 1
+    
+    exp = f"bound{latency_bound_str}-{train_model}-b{train_bs}-{loss_func}-{optim}X{infer_model}-b{infer_bs}-{dist}-rps{float(rps)}"
+
     for i in range(num_result_dirs):
-        os.chdir(os.path.join(result_dirname+f"-{i}", args.exp))
+        if i != 1:
+            continue
+        os.chdir(os.path.join(result_dirname+f"-{i}", exp))
 
         infer_result_file = open("infer-result.csv", "r")
         infer_result = list(csv.reader(infer_result_file))
@@ -60,6 +64,7 @@ if __name__ == "__main__":
         print(f"req throughput : {len(infer_latencies)/total_time * 1000:>.4f}")
         print(f"req goodput : {num_success/total_time * 1000:>.4f}")
         print()
+        # print(f"{args.exp},{total_time/1000},{num_success},{num_drops},{num_failed}")
 
         train_result_file = open("train-result.csv", "r")
         train_result = list(csv.reader(train_result_file))
