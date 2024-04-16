@@ -1,18 +1,17 @@
 import os
 
-models_t = ["rnet", "mnet", "enet", "swin", "vit_l"]
-models_i = ["rnet", "mnet", "enet", "swin", "vit_l", "dnet"]
-models_t = ["rnet"]
-models_i = ["vit_l"]
+models_t = ["rnet", "mnet", "vit_b", "vit_l", "enet", "swin"]
+models_i = ["rnet", "mnet", "vit_b", "vit_l", "enet", "swin", "dnet", "sqnet", "shnet", "mnnet"]
+models_i = ["sqnet", "shnet", "mnnet"]
 
 is_be_infer = False
 
 for trial in range(1):
-    for slo in [100]:
-        for rps in [1]:
+    for slo in [100, 200, 300]:
+        for rps in [1, 2]:
             for train in models_t:
                 for infer in models_i:
-                    if "mnet" in infer:
+                    if infer in ["mnet", "sqnet", "shnet", "mnnet"] :
                         max_be_duration = 100000
                     if "vit" in infer:
                         max_be_duration = 320000

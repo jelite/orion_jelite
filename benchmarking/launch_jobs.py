@@ -40,7 +40,10 @@ function_dict = {
     "densenet121":imagenet_loop,
     "vit_l_16":imagenet_loop,
     "vit_b_16":imagenet_loop,
-    "swin_b":imagenet_loop
+    "swin_b":imagenet_loop,
+    "mnasnet1_3":imagenet_loop,
+    "shufflenet_v2_x2_0":imagenet_loop,
+    "squeezenet1_1":imagenet_loop
 }
 
 

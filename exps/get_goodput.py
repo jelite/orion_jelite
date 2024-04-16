@@ -14,7 +14,7 @@ total_iter = args.total_iter
 
 
 
-for file in glob.glob(f"./exp_data/*.txt"):
+for file in glob.glob(f"./*.txt"):
     if str(latency_bound) not in file:
         continue
     with open(file, 'r') as f:
