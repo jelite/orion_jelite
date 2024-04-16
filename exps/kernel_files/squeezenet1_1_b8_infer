@@ -1,0 +1,91 @@
+Name,Profile,Memory_footprint,SM_usage,Duration
+Conv,1,0,193,84448
+void at::native::elementwise_kernel,0,0,1541,67488
+void at::native::vectorized_elementwise_kernel,0,0,771,63776
+void at::native::(anonymous namespace)::max_pool_forward_nchw,0,0,757,65120
+Conv,1,0,48,42336
+void at::native::elementwise_kernel,0,0,95,8416
+void at::native::vectorized_elementwise_kernel,-1,0,48,6496
+Conv,0,0,48,30464
+void at::native::elementwise_kernel,0,0,379,20000
+void at::native::vectorized_elementwise_kernel,0,0,190,17760
+Conv,1,0,48,68000
+void at::native::elementwise_kernel,0,0,379,20032
+void at::native::vectorized_elementwise_kernel,0,0,190,17920
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,0,0,80,39360
+Conv,1,0,48,61952
+void at::native::elementwise_kernel,0,0,95,8832
+void at::native::vectorized_elementwise_kernel,-1,0,48,6496
+Conv,0,0,48,29696
+void at::native::elementwise_kernel,0,0,379,20096
+void at::native::vectorized_elementwise_kernel,0,0,190,18240
+Conv,1,0,48,68224
+void at::native::elementwise_kernel,0,0,379,20448
+void at::native::vectorized_elementwise_kernel,0,0,190,18464
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,0,0,80,41760
+void at::native::(anonymous namespace)::max_pool_forward_nchw,0,0,365,35200
+Conv,1,0,12,35872
+void at::native::elementwise_kernel,0,0,46,6624
+void at::native::vectorized_elementwise_kernel,-1,0,23,5440
+Conv,1,0,46,25728
+void at::native::elementwise_kernel,0,0,183,11648
+void at::native::vectorized_elementwise_kernel,-1,0,92,10048
+Conv,1,0,128,53760
+void at::native::elementwise_kernel,0,0,183,12064
+void at::native::vectorized_elementwise_kernel,-1,0,92,10400
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,21504
+Conv,1,0,12,37984
+void at::native::elementwise_kernel,0,0,46,6592
+void at::native::vectorized_elementwise_kernel,-1,0,23,5184
+Conv,1,0,46,26176
+void at::native::elementwise_kernel,0,0,183,11552
+void at::native::vectorized_elementwise_kernel,-1,0,92,9760
+Conv,1,0,128,54560
+void at::native::elementwise_kernel,0,0,183,11904
+void at::native::vectorized_elementwise_kernel,-1,0,92,9760
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,21664
+void at::native::(anonymous namespace)::max_pool_forward_nchw,-1,0,169,21600
+Conv,1,0,6,31616
+void at::native::elementwise_kernel,0,0,16,5728
+void at::native::vectorized_elementwise_kernel,-1,0,8,4608
+Conv,1,0,17,17760
+void at::native::elementwise_kernel,0,0,64,7200
+void at::native::vectorized_elementwise_kernel,-1,0,32,5824
+Conv,1,0,48,43040
+void at::native::elementwise_kernel,0,0,64,7712
+void at::native::vectorized_elementwise_kernel,-1,0,32,5728
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,9888
+Conv,1,0,6,42528
+void at::native::elementwise_kernel,0,0,16,5728
+void at::native::vectorized_elementwise_kernel,-1,0,8,4992
+Conv,1,0,17,18112
+void at::native::elementwise_kernel,0,0,64,7552
+void at::native::vectorized_elementwise_kernel,-1,0,32,5792
+Conv,1,0,48,43424
+void at::native::elementwise_kernel,0,0,64,7424
+void at::native::vectorized_elementwise_kernel,-1,0,32,5696
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,9664
+Conv,1,0,6,41536
+void at::native::elementwise_kernel,0,0,22,6624
+void at::native::vectorized_elementwise_kernel,-1,0,11,4544
+Conv,1,0,11,28544
+void at::native::elementwise_kernel,0,0,85,8000
+void at::native::vectorized_elementwise_kernel,-1,0,43,6272
+Conv,1,0,64,51392
+void at::native::elementwise_kernel,0,0,85,8192
+void at::native::vectorized_elementwise_kernel,-1,0,43,6624
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,11392
+Conv,1,0,6,52544
+void at::native::elementwise_kernel,0,0,22,6016
+void at::native::vectorized_elementwise_kernel,-1,0,11,4576
+Conv,1,0,11,28416
+void at::native::elementwise_kernel,0,0,85,8320
+void at::native::vectorized_elementwise_kernel,-1,0,43,6400
+Conv,1,0,64,50368
+void at::native::elementwise_kernel,0,0,85,7808
+void at::native::vectorized_elementwise_kernel,-1,0,43,6688
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,12032
+Conv,1,0,44,174272
+void at::native::elementwise_kernel,0,0,331,17536
+void at::native::vectorized_elementwise_kernel,0,0,166,16064
+void at::native::reduce_kernel,0,0,125,17120

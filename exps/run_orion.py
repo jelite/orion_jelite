@@ -2,11 +2,14 @@ import os
 
 models_t = ["rnet", "mnet", "enet", "swin", "vit_l"]
 models_i = ["rnet", "mnet", "enet", "swin", "vit_l", "dnet"]
+models_t = ["rnet"]
+models_i = ["vit_l"]
+
 is_be_infer = False
 
 for trial in range(1):
-    for rps in [1, 2]:
-        for slo in [300]:
+    for slo in [100]:
+        for rps in [1]:
             for train in models_t:
                 for infer in models_i:
                     if "mnet" in infer:

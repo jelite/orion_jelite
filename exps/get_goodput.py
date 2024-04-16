@@ -17,8 +17,6 @@ total_iter = args.total_iter
 for file in glob.glob(f"./exp_data/*.txt"):
     if str(latency_bound) not in file:
         continue
-    if "swin_bxswin_b_64.83_" not in file:
-        continue 
     with open(file, 'r') as f:
         lines = f.readlines()
         goodput_list = []
@@ -43,28 +41,38 @@ for file in glob.glob(f"./exp_data/*.txt"):
                     goodput_list[-1]["success"] += 1
             else:
                 goodput_list[-1]["drop"] += 1
-            if line_num < 2000:
-                l = line.split(",")
-                if "passed" not in line.split(",")[0] :
-                    print(f"{l[0]},{l[1]},{l[2]},{float(l[0]) < latency_bound}")
-                else:
-                    print(f"{l[0]},{l[1]},{l[2][:-1]},{False}")
+            # if line_num < 2000:
+            #     l = line.split(",")
+                # if "passed" not in line.split(",")[0] :
+                    # print(f"{l[0]},{l[1]},{l[2]},{float(l[0]) < latency_bound}")
+                # else:
+                    # print(f"{l[0]},{l[1]},{l[2][:-1]},{False}")
 
         trial_num = len(goodput_list)
-
-        with open(f"{file[:-4]}_total.log", 'r') as f:
-            for i in range(trial_num):
-                total_time_str = f.readline().split(",")[0]
-                total_time =  float(total_time_str)
-                goodput_list[i]["total_time"] = total_time
+        err = False
+        try:
+            with open(f"{file[:-4]}_total.log", 'r') as f:
+                for i in range(trial_num):
+                    total_time_str = f.readline().split(",")[0]
+                    # print(file, total_time_str)
+                    total_time =  float(total_time_str)
+                    goodput_list[i]["total_time"] = total_time
+        except FileNotFoundError:
+            err = True
+            # Handle the error: log an error message or take corrective action
+            print(f"Error: The file '{file}' does not exist.")
         
-        goodputs = []
-        for i in range(trial_num):
-            success = goodput_list[i]["success"]
-            drop = goodput_list[i]["drop"]
-            fail = total_iter - success - drop
-            total_time = goodput_list[i]["total_time"]
-            pure_time = pure_list[i]["pure_time"]
-            file_name = file.split('/')[-1]
-            goodputs.append(success/total_time)
-            # print(f"{file_name},Trial-{i},{success/total_time},{success},{drop},{fail},{total_time},{pure_time/(success+fail)}")
+        if (not err):
+            goodputs = []
+            for i in range(trial_num):
+                success = goodput_list[i]["success"]
+                drop = goodput_list[i]["drop"]
+                fail = total_iter - success - drop
+                total_time = goodput_list[i]["total_time"]
+                pure_time = pure_list[i]["pure_time"]
+                file_name = file.split('/')[-1]
+                goodputs.append(success/total_time)
+                print(f"{file_name},Trial-{i},{success/total_time},{success},{drop},{fail},{total_time},{pure_time/(success+fail)}")
+    # if (not err):
+        # print(f"{file_name}, {sum(goodputs)/len(goodputs)}, {len(goodputs)}")
+    

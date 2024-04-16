@@ -1,0 +1,199 @@
+Name,Profile,Memory_footprint,SM_usage,Duration
+Conv,1,0,98,45376
+BatchNorm,0,0,48,34272
+void at::native::vectorized_elementwise_kernel,0,0,294,25696
+void at::native::(anonymous namespace)::max_pool_forward_nchw,0,0,294,28992
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,74,9376
+BatchNorm,0,0,24,6880
+Conv,1,0,49,23840
+BatchNorm,0,0,122,12864
+void at::native::vectorized_elementwise_kernel,-1,0,94,10144
+Conv,1,0,98,49184
+BatchNorm,0,0,244,38272
+void at::native::vectorized_elementwise_kernel,0,0,374,32608
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,374,29696
+BatchNorm,0,0,122,13472
+Conv,1,0,49,42176
+BatchNorm,0,0,122,13184
+void at::native::vectorized_elementwise_kernel,-1,0,94,10400
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,22080
+void at::native::elementwise_kernel,0,0,374,19936
+void at::native::elementwise_kernel,-1,0,187,11936
+Conv,1,0,49,42944
+BatchNorm,0,0,122,13792
+void at::native::vectorized_elementwise_kernel,-1,0,94,9792
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,374,21920
+BatchNorm,0,0,122,13312
+Conv,1,0,49,43424
+BatchNorm,0,0,122,13792
+void at::native::vectorized_elementwise_kernel,-1,0,94,10784
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,32768
+void at::native::elementwise_kernel,0,0,374,20000
+void at::native::elementwise_kernel,-1,0,187,11552
+Conv,1,0,49,44032
+BatchNorm,0,0,122,12992
+void at::native::vectorized_elementwise_kernel,-1,0,94,10208
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,374,22016
+BatchNorm,0,0,122,13280
+Conv,1,0,49,42304
+BatchNorm,0,0,122,13408
+void at::native::vectorized_elementwise_kernel,-1,0,94,10368
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,34624
+void at::native::elementwise_kernel,0,0,374,20672
+void at::native::elementwise_kernel,-1,0,187,12128
+Conv,1,0,49,43072
+BatchNorm,0,0,122,12512
+void at::native::vectorized_elementwise_kernel,-1,0,94,10176
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,374,22656
+BatchNorm,0,0,122,12672
+Conv,1,0,49,42304
+BatchNorm,0,0,122,13152
+void at::native::vectorized_elementwise_kernel,-1,0,94,9792
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,35008
+void at::native::elementwise_kernel,0,0,374,20544
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,18400
+BatchNorm,0,0,61,9152
+Conv,1,0,13,49984
+BatchNorm,0,0,61,9280
+void at::native::vectorized_elementwise_kernel,-1,0,47,6560
+Conv,1,0,49,98688
+BatchNorm,0,0,244,21664
+void at::native::vectorized_elementwise_kernel,0,0,187,17440
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,17696
+BatchNorm,0,0,61,9408
+Conv,1,0,13,50592
+BatchNorm,0,0,61,9248
+void at::native::vectorized_elementwise_kernel,-1,0,47,6496
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,13888
+void at::native::elementwise_kernel,-1,0,187,12800
+void at::native::elementwise_kernel,-1,0,94,8832
+Conv,1,0,13,49856
+BatchNorm,0,0,61,9568
+void at::native::vectorized_elementwise_kernel,-1,0,47,6720
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,13280
+BatchNorm,0,0,61,9440
+Conv,1,0,13,51008
+BatchNorm,0,0,61,9248
+void at::native::vectorized_elementwise_kernel,-1,0,47,6528
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,20896
+void at::native::elementwise_kernel,-1,0,187,12896
+void at::native::elementwise_kernel,-1,0,94,8448
+Conv,1,0,13,50624
+BatchNorm,0,0,61,9920
+void at::native::vectorized_elementwise_kernel,-1,0,47,6656
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,12992
+BatchNorm,0,0,61,9856
+Conv,1,0,13,49984
+BatchNorm,0,0,61,9760
+void at::native::vectorized_elementwise_kernel,-1,0,47,6528
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,20768
+void at::native::elementwise_kernel,-1,0,187,12832
+void at::native::elementwise_kernel,-1,0,94,8096
+Conv,1,0,13,49600
+BatchNorm,0,0,61,9888
+void at::native::vectorized_elementwise_kernel,-1,0,47,6656
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,13120
+BatchNorm,0,0,61,10144
+Conv,1,0,13,50112
+BatchNorm,0,0,61,9888
+void at::native::vectorized_elementwise_kernel,-1,0,47,6624
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,19328
+void at::native::elementwise_kernel,-1,0,187,13344
+void at::native::elementwise_kernel,-1,0,94,8320
+Conv,1,0,13,50816
+BatchNorm,0,0,61,9792
+void at::native::vectorized_elementwise_kernel,-1,0,47,6656
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,13152
+BatchNorm,0,0,61,10208
+Conv,1,0,13,49888
+BatchNorm,0,0,61,9920
+void at::native::vectorized_elementwise_kernel,-1,0,47,6528
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,20384
+void at::native::elementwise_kernel,-1,0,187,12736
+void at::native::elementwise_kernel,-1,0,94,8544
+Conv,1,0,13,49792
+BatchNorm,0,0,61,9920
+void at::native::vectorized_elementwise_kernel,-1,0,47,6752
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,13248
+BatchNorm,0,0,61,9952
+Conv,1,0,13,50176
+BatchNorm,0,0,61,10048
+void at::native::vectorized_elementwise_kernel,-1,0,47,6464
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,19392
+void at::native::elementwise_kernel,-1,0,187,12640
+void at::native::elementwise_kernel,-1,0,94,8288
+Conv,1,0,13,50432
+BatchNorm,0,0,61,9792
+void at::native::vectorized_elementwise_kernel,-1,0,47,6848
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,13280
+BatchNorm,0,0,61,10240
+Conv,1,0,13,50400
+BatchNorm,0,0,61,9856
+void at::native::vectorized_elementwise_kernel,-1,0,47,6752
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,20480
+void at::native::elementwise_kernel,-1,0,187,12544
+void at::native::elementwise_kernel,-1,0,94,8128
+Conv,1,0,13,51008
+BatchNorm,0,0,61,10016
+void at::native::vectorized_elementwise_kernel,-1,0,47,6464
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,187,13344
+BatchNorm,0,0,61,9856
+Conv,1,0,13,49920
+BatchNorm,0,0,61,9920
+void at::native::vectorized_elementwise_kernel,-1,0,47,6752
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,20032
+void at::native::elementwise_kernel,-1,0,187,12736
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,94,12480
+BatchNorm,0,0,122,11328
+Conv,1,0,13,54304
+BatchNorm,0,0,122,11712
+void at::native::vectorized_elementwise_kernel,-1,0,24,5536
+Conv,1,0,26,119008
+BatchNorm,0,0,122,14240
+void at::native::vectorized_elementwise_kernel,-1,0,94,10656
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,94,13248
+BatchNorm,0,0,122,11424
+Conv,1,0,13,56192
+BatchNorm,0,0,122,11584
+void at::native::vectorized_elementwise_kernel,-1,0,24,5536
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,80,8768
+void at::native::elementwise_kernel,-1,0,94,8992
+void at::native::elementwise_kernel,-1,0,47,7136
+Conv,1,0,13,55328
+BatchNorm,0,0,122,11488
+void at::native::vectorized_elementwise_kernel,-1,0,24,5248
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,94,9792
+BatchNorm,0,0,122,11456
+Conv,1,0,13,55008
+BatchNorm,0,0,122,11360
+void at::native::vectorized_elementwise_kernel,-1,0,24,5664
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,12032
+void at::native::elementwise_kernel,-1,0,94,9088
+void at::native::elementwise_kernel,-1,0,47,6848
+Conv,1,0,13,54688
+BatchNorm,0,0,122,11456
+void at::native::vectorized_elementwise_kernel,-1,0,24,5216
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,94,9568
+BatchNorm,0,0,122,11552
+Conv,1,0,13,53920
+BatchNorm,0,0,122,11360
+void at::native::vectorized_elementwise_kernel,-1,0,24,5408
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,12288
+void at::native::elementwise_kernel,-1,0,94,8608
+void at::native::elementwise_kernel,-1,0,47,6976
+Conv,1,0,13,54848
+BatchNorm,0,0,122,11360
+void at::native::vectorized_elementwise_kernel,-1,0,24,5472
+void at::native::(anonymous namespace)::conv_depthwise2d_forward_kernel,0,0,94,9248
+BatchNorm,0,0,122,11392
+Conv,1,0,13,55776
+BatchNorm,0,0,122,11424
+void at::native::vectorized_elementwise_kernel,-1,0,24,5248
+void at::native::(anonymous namespace)::CatArrayBatchedCopy,-1,0,107,11712
+void at::native::elementwise_kernel,-1,0,94,8512
+Conv,1,0,32,217152
+BatchNorm,0,0,512,32192
+void at::native::vectorized_elementwise_kernel,-1,0,98,10944
+void at::native::reduce_kernel,0,0,256,16480
+void at::native::elementwise_kernel,-1,0,2,4992
+volta_sgemm_128x32_tn,1,0,24,35232
