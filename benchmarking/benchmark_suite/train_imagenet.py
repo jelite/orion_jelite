@@ -167,7 +167,7 @@ def imagenet_loop(
                 elif train=="be_infer":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
                     if rps > 0:
-                        json_data = np.random.exponential(scale=1/args.rps, size=10000)
+                        json_data = np.random.exponential(scale=1/rps, size=10000)
 
                         # path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals_Bbe-rps{rps}-reqs10000-num0.json"
                         # with open(path, "r") as json_file:
@@ -243,12 +243,15 @@ def imagenet_loop(
                             if batch_idx != 200:
                                 queuing_delay = (start_time - req_.start_time)*1000
                                 
-                            if queuing_delay < latency_bound:
-                                output = model(gpu_data)
-                                block(backend_lib, batch_idx)
-                            else:
-                                is_passed = True
-                                block(backend_lib, -1)
+                            # if queuing_delay < latency_bound:
+                            #     output = model(gpu_data)
+                            #     block(backend_lib, batch_idx)
+                            # else:
+                            #     is_passed = True
+                            #     block(backend_lib, -1)
+                            output = model(gpu_data)
+                            block(backend_lib, batch_idx)
+
                             torch.cuda.synchronize()        
                             end_time = time.time()
                             batch_idx,batch = next(train_iter)
