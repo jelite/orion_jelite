@@ -1,7 +1,7 @@
 import os
 
 models_t = ["vit_l", "rnet", "mnet", "enet", "swin"]
-models_t = ["rnet"]
+models_t = ["vit_l"]
 # models_t = ["vit_l"]
 # models_t = ["swin"]
 models_i = ["dnet", "rnet", "mnet", "enet"]

@@ -2,19 +2,18 @@ import sys
 import glob
 from argparse import ArgumentParser
 import csv
+import pandas as pd
 
 argparser = ArgumentParser()
-argparser.add_argument("--latency_bound", type=int)
-argparser.add_argument("--total_iter", type=int)
+argparser.add_argument("--latency_bound", type=int, default=50)
+argparser.add_argument("--total_iter", type=int, default=2000)
 
 args = argparser.parse_args()
 
 latency_bound = args.latency_bound
 total_iter = args.total_iter
 
-print("file,trial,goodput,success,drop,fail")
-
-
+data_list = []
 for file_name in glob.glob(f"./*.txt"):
     if str(latency_bound) not in file_name:
         continue
@@ -75,7 +74,12 @@ for file_name in glob.glob(f"./*.txt"):
                 pure_time = pure_list[i]["pure_time"]
                 file_name = file_name.split('/')[-1]
                 goodputs.append(success/total_time)
-                print(f"{file_name},Trial-{i},{success/total_time},{success},{drop},{fail},{total_time},{pure_time/(success+fail)}")
+                data_list.append((file_name,success/total_time,success,drop,fail))
+
+    df = pd.DataFrame(data_list, columns=['file', "goodput", "success", "drop", "fail"])
+    df = df.sort_value(["file"])
+
+    print(df)
     # if (not err):
         # print(f"{file_name}, {sum(goodputs)/len(goodputs)}, {len(goodputs)}")
     

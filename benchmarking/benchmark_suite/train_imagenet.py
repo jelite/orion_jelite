@@ -167,7 +167,7 @@ def imagenet_loop(
                 elif train=="be_infer":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
                     if rps > 0:
-                        json_data = np.random.exponential(scale=1/args.rps, size=10000)
+                        json_data = np.random.exponential(scale=1/rps, size=10000)
 
                         # path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals_Bbe-rps{rps}-reqs10000-num0.json"
                         # with open(path, "r") as json_file:

@@ -105,9 +105,9 @@ for train_idx, train_name in enumerate(models):
         else:
             infer_batch = 8
         
-        rt_rps=[59.13, 85.05, 320.43, 41.52, 31.5, 64.83] #X2
-        # rt_rps=[62.15, 97.34, 139.86, 33.44] #old
-        # rt_rps=[1000/18, 1000/12, 1000/9, 1000/31] #new
+        # rt_rps=[59.13, 85.05, 320.43, 41.52, 31.5, 64.83] #X2
+        rt_rps=[62.15, 97.34, 139.86, 33.44] # orion 1
+        rt_rps=[31.08, 48.67, 69.93, 16.72] # orion 1/2
         be_rps=[39.41, 56.70, 213.62, 27.67, 20.99, 43.22] #X3
         be_rps=[29.56, 42.53, 160.22, 20.75, 15.75, 32.42] #X4
         latency_bounds = [50, 25, 10]
@@ -122,11 +122,11 @@ for train_idx, train_name in enumerate(models):
                 elif "effi" in infer_name:
                     rps_rt = rt_rps[3]  
                 elif "vit_l" in infer_name:
-                    rps_rt = rt_rps[4]
+                    rps_rt = rt_rps[3]
                 elif "swin" in infer_name:
-                    rps_rt = rt_rps[5]
+                    rps_rt = rt_rps[3]
                 else:
-                    rps_rt = rt_rps[5]
+                    rps_rt = rt_rps[3]
                 # elif "vit_b" in infer_name:
                 #     rps_rt = levels_rt[6]
 
