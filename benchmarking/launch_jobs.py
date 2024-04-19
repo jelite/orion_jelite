@@ -102,12 +102,7 @@ def launch_jobs(config_dict_list, input_args, run_eval):
     warmup_event = mp.Event()
     end_event = mp.Event()
     request_queue = mp.Queue()
-    
-    if rps > 0:
-        if config_infer['args']['uniform']:
-            sleep_times = [1/rps]*(num_iters[1]-200)
-        else:
-            sleep_times = np.random.exponential(scale=1/rps, size=num_iters[1])
+
             
     #train
     file_name = f'{config_train["arch"]}x{config_infer["arch"]}_{rps}_{latency_bound}ms'
@@ -162,29 +157,29 @@ def launch_jobs(config_dict_list, input_args, run_eval):
     print("sche start")
     sched_thread.start()
 
-    path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals-rps{rps}-reqs{num_iters[1]-200}-num{input_args.trial}.json"
+    # path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals_B025rt-rps{rps}-reqs{num_iters[1]-200}-num{input_args.trial}.json"
+    # with open(path, "r") as json_file:
+    #     json_data = json.load(json_file)
+    # rps_start_barrier.wait()
+    # print(f"RPS-{rps} READY!!!")
+    # st_time = time.time()
+    # req = Request(0, st_time)
+    # request_queue.put(req)
+    # for idx, data in enumerate(json_data):
+    #     time.sleep(float(data))
+    #     st_time = time.time()
+    #     req = Request(idx, st_time)
+    #     request_queue.put(req)
 
-    with open(path, "r") as json_file:
-        json_data = json.load(json_file)
-
+    interval = 1/rps
+    arrival_times = np.random.uniform(interval - interval*0.25, interval + interval*0.25, 2000).tolist()
     rps_start_barrier.wait()
     print(f"RPS-{rps} READY!!!")
-    st_time = time.time()
-    req = Request(0, st_time)
-    request_queue.put(req)
-
-    for idx, data in enumerate(json_data):
-        time.sleep(float(data))
+    for id in range(num_iters[1]-200):
         st_time = time.time()
-        req = Request(idx, st_time)
+        req = Request(id, st_time)
         request_queue.put(req)
-        
-    # rps_start_barrier.wait()
-    # for id in range(num_iters[1]-200):
-    #     st_time = time.time()
-    #     req = Request(id, st_time)
-    #     request_queue.put(req)
-    #     time.sleep(sleep_times[id])
+        time.sleep(arrival_times[id])
         
     for thread in threads:
         thread.join()

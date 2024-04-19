@@ -1,22 +1,23 @@
 import glob
+import pandas as pd
+import numpy as np
+from argparse import ArgumentParser
 
-for file in glob.glob("*.txt"):
+argparser = ArgumentParser()
+argparser.add_argument("--dir", type=str)
+argparser.add_argument("--tile", type=int)
 
-    infer = file.split("x")[1]
+args = argparser.parse_args()
+
+data_list = []
+
+for f in glob.glob(f"./be_infer/A_{args.dir}/*.txt"):
+
+    infer = f.split("x")[1]
     infer = infer.split("_")[0]
 
-    kernel_latency_sum = []
-    queuing_delay_sum = []
+    data = pd.read_csv(f, sep=",", header=None, names=["dur", "num"])
 
-    with open(file, 'r') as f:
-        lines = f.readlines()
-    for line in lines:
-        if "passed" in line:
-            continue
-        data = float(line.split(",")[1])
-        kernel_latency_sum.append(data)
-        
-        data = float(line.split(",")[2])
-        queuing_delay_sum.append(data)
-
-    print(f"{file} {sum(kernel_latency_sum)/len(kernel_latency_sum)} {sum(queuing_delay_sum)/len(queuing_delay_sum)}")
+    tile = np.percentile(data, args.tile, method="nearest")
+    tile = data["dur"].max()    
+    print(f"{f},{tile}")

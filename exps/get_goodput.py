@@ -12,12 +12,13 @@ args = argparser.parse_args()
 latency_bound = args.latency_bound
 total_iter = args.total_iter
 
+print("file,trial,goodput,success,drop,fail")
 
 
-for file in glob.glob(f"./*.txt"):
-    if str(latency_bound) not in file:
+for file_name in glob.glob(f"./*.txt"):
+    if str(latency_bound) not in file_name:
         continue
-    with open(file, 'r') as f:
+    with open(file_name, 'r') as f:
         lines = f.readlines()
         goodput_list = []
         pure_list = []
@@ -41,6 +42,7 @@ for file in glob.glob(f"./*.txt"):
                     goodput_list[-1]["success"] += 1
             else:
                 goodput_list[-1]["drop"] += 1
+       
             # if line_num < 2000:
             #     l = line.split(",")
                 # if "passed" not in line.split(",")[0] :
@@ -51,7 +53,8 @@ for file in glob.glob(f"./*.txt"):
         trial_num = len(goodput_list)
         err = False
         try:
-            with open(f"{file[:-4]}_total.log", 'r') as f:
+            with open(f"{'_'.join(file_name.split('_')[:-1])}_total_withinfer.log",'r') as f:
+            # with open(f"{file_name[:-4]}_total.log", 'r') as f:
                 for i in range(trial_num):
                     total_time_str = f.readline().split(",")[0]
                     # print(file, total_time_str)
@@ -60,7 +63,7 @@ for file in glob.glob(f"./*.txt"):
         except FileNotFoundError:
             err = True
             # Handle the error: log an error message or take corrective action
-            print(f"Error: The file '{file}' does not exist.")
+            print(f"Error: The file '{file_name}' does not exist!")
         
         if (not err):
             goodputs = []
@@ -70,7 +73,7 @@ for file in glob.glob(f"./*.txt"):
                 fail = total_iter - success - drop
                 total_time = goodput_list[i]["total_time"]
                 pure_time = pure_list[i]["pure_time"]
-                file_name = file.split('/')[-1]
+                file_name = file_name.split('/')[-1]
                 goodputs.append(success/total_time)
                 print(f"{file_name},Trial-{i},{success/total_time},{success},{drop},{fail},{total_time},{pure_time/(success+fail)}")
     # if (not err):

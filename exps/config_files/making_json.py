@@ -10,14 +10,16 @@ def get_kernel_num(file_name):
 # models = ["resnet50", "mobilenet_v3_large", "efficientnet_v2_m", \
 #           "vit_l_16", "swin_b", "densenet121"]
 train_models = ["resnet50", "mobilenet_v3_large", "vit_b_16", "vit_l_16", "efficientnet_v2_m", "swin_b", "densenet121"]
-infer_models = ["resnet50", "mobilenet_v3_large", "vit_b_16", "vit_l_16", "efficientnet_v2_m", "swin_b", "densenet121", "squeezenet1_1", "shufflenet_v2_x2_0", "mnasnet1_3"]
+models = ["resnet50", "mobilenet_v3_large", "vit_l_16", "efficientnet_v2_m", "swin_b", "densenet121", "squeezenet1_1", "shufflenet_v2_x2_0", "mnasnet1_3"]
 # alias = ["rnet", "mnet", "enet", "vit", "swin", "dnet"]
-alias = ["rnet", "mnet", "vit_b", "vit_l", "enet", "swin", "dnet", "sqnet", "shnet", "mnnet"]
+alias = ["rnet", "mnet", "vit_l", "enet", "swin", "dnet", "sqnet", "shnet", "mnnet"]
 
 
 #for train x infer
-for train_idx, train_name in enumerate(train_models):
-    for infer_idx, infer_name in enumerate(infer_models):
+for train_idx, train_name in enumerate(models):
+    for infer_idx, infer_name in enumerate(models):
+        if train_name in ["squeezenet1_1", "shufflenet_v2_x2_0", "mnasnet1_3"]:
+            continue
         if "vit" in train_name or "swin" in train_name:
             train_batch = 8
         else:
@@ -92,8 +94,8 @@ for train_idx, train_name in enumerate(train_models):
 
 
 # #for infer x infer
-for train_idx, train_name in enumerate(infer_models):
-    for infer_idx, infer_name in enumerate(infer_models):
+for train_idx, train_name in enumerate(models):
+    for infer_idx, infer_name in enumerate(models):
         if "vit" in train_name or "swin" in train_name:
             train_batch = 1
         else:
@@ -103,26 +105,49 @@ for train_idx, train_name in enumerate(infer_models):
         else:
             infer_batch = 8
         
-        levels = [[29.56, 42.53, 160.22, 20.75, 15.75, 32.42, 46.01],[59.13, 85.05, 320.43, 41.52, 31.5, 64.83, 92.01]]
-        latency_bounds = [100, 200, 300]
-        for idx, level in enumerate(levels):
+        rt_rps=[59.13, 85.05, 320.43, 41.52, 31.5, 64.83] #X2
+        # rt_rps=[62.15, 97.34, 139.86, 33.44] #old
+        # rt_rps=[1000/18, 1000/12, 1000/9, 1000/31] #new
+        be_rps=[39.41, 56.70, 213.62, 27.67, 20.99, 43.22] #X3
+        be_rps=[29.56, 42.53, 160.22, 20.75, 15.75, 32.42] #X4
+        latency_bounds = [50, 25, 10]
+        for _ in [1]:
             for latency_bound in latency_bounds:
                 if "dense" in infer_name:
-                    rps = level[0]
+                    rps_rt = rt_rps[0]
                 elif "resnet" in infer_name:
-                    rps = level[1]
+                    rps_rt = rt_rps[1]
                 elif "mobilenet" in infer_name:
-                    rps = level[2] 
+                    rps_rt = rt_rps[2] 
                 elif "effi" in infer_name:
-                    rps = level[3]  
+                    rps_rt = rt_rps[3]  
                 elif "vit_l" in infer_name:
-                    rps = level[4]
+                    rps_rt = rt_rps[4]
                 elif "swin" in infer_name:
-                    rps = level[5]
-                elif "vit_b" in infer_name:
-                    rps = level[6]
+                    rps_rt = rt_rps[5]
                 else:
-                    rps = level[2]
+                    rps_rt = rt_rps[5]
+                # elif "vit_b" in infer_name:
+                #     rps_rt = levels_rt[6]
+
+                if "dense" in train_name:
+                    rps_be = be_rps[0]
+                elif "resnet" in train_name:
+                    rps_be = be_rps[1]
+                elif "mobilenet" in train_name:
+                    rps_be = be_rps[2] 
+                elif "effi" in train_name:
+                    rps_be = be_rps[3]  
+                elif "vit_l" in train_name:
+                    rps_be = be_rps[4]
+                elif "swin" in train_name:
+                    rps_be = be_rps[5]
+                else:
+                    rps_rt = be_rps[5]
+                # elif "vit_b" in train_name:
+                #     rps_be = levels_be[6]
+                # else:
+                #     rps = level[2]
                     
                     
                 train_kernel_file = f"/workspace/exps/kernel_files/{train_name}_b{train_batch}_infer"
@@ -138,7 +163,7 @@ for train_idx, train_name in enumerate(infer_models):
                             "model_name": train_name,
                             "batchsize": train_batch,
                             "latency_bound": None,
-                            "rps": 0,
+                            "rps": rps_be,
                             "uniform": False,
                             "dummy_data": True,
                             "train": "be_infer"
@@ -152,7 +177,7 @@ for train_idx, train_name in enumerate(infer_models):
                         "args": {
                             "model_name": infer_name,
                             "batchsize": infer_batch,
-                            "rps": rps,
+                            "rps": rps_rt,
                             "latency_bound": latency_bound,
                             "uniform": False,
                             "dummy_data": True,
@@ -162,7 +187,7 @@ for train_idx, train_name in enumerate(infer_models):
                 ]
                 
                 # configs = configs.values()
-                with open(f"be_infer/rps_level{idx+1}_{latency_bound}ms/{alias[train_idx]}_{alias[infer_idx]}.json", "w") as outfile:
+                with open(f"be_infer/rps_level{1}_{latency_bound}ms/{alias[train_idx]}_{alias[infer_idx]}.json", "w") as outfile:
                     json.dump(configs, outfile, indent=4)
 
 print("Done")

@@ -103,20 +103,20 @@ def imagenet_loop(
     train_iter = enumerate(train_loader)
     batch_idx, batch = next(train_iter)
     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
-    print("Enter loop!")
+    print("Enter loop!@")
 
     #  open loop
     next_startup = time.time()
     open_loop = True
     warmup_flag = True
     
-    if train=="be_infer":
-        if rps > 0:
-            if uniform:
-                sleep_times = [1/rps]*(num_iters)
-            else:
-                sleep_times = np.random.exponential(scale=1/rps, size=num_iters)
-            
+    # if train=="be_infer":
+    #     if rps > 0:
+    #         if uniform:
+    #             sleep_times = [1/rps]*(num_iters)
+    #         else:
+    #             sleep_times = np.random.exponential(scale=1/rps, size=num_iters)
+               
     if True:
         timings=[]
         for i in range(1):
@@ -124,7 +124,6 @@ def imagenet_loop(
 
             while batch_idx < num_iters:
                 start_iter = time.time()
-
                 if train=="train":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
                     print("TRAIN!!!!")
@@ -137,7 +136,6 @@ def imagenet_loop(
                         loss.backward()
                         optimizer.step()
                         block(backend_lib, batch_idx)
-                        print("train_eeeeeee")
                         torch.cuda.synchronize()
                         end_time = time.time()
                         batch_idx, batch = next(train_iter)
@@ -147,14 +145,12 @@ def imagenet_loop(
                             with open(f"/workspace/exps/train/{file_name}.txt",'a') as f:
                                 f.write(f"{(end_time-start_time)*1000}, {trial}\n")
                     else:
-                        print("train2 sssss")
                         optimizer.zero_grad()
                         output = model(gpu_data)
                         loss = criterion(output, gpu_target)
                         loss.backward()
                         optimizer.step()
                         block(backend_lib, batch_idx)
-                        print("train2_eeeeeee")
                         batch_idx, batch = next(train_iter)
                         if (batch_idx == 1): # for backward
                             barriers[0].wait()
@@ -170,34 +166,48 @@ def imagenet_loop(
                         break
                 elif train=="be_infer":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
-            
+                    if rps > 0:
+                        json_data = np.random.exponential(scale=1/args.rps, size=10000)
+
+                        # path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals_Bbe-rps{rps}-reqs10000-num0.json"
+                        # with open(path, "r") as json_file:
+                        #     json_data = json.load(json_file)
+                        
+
+
                     if warmup_event.is_set():
-                        print("BBBBBBBB")
-                        time.sleep(sleep_times[batch_idx])
-                        start_time = time.time()
-                        torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
-                        output = model(gpu_data)
-                        torch.cuda.nvtx.range_pop()
-                        block(backend_lib, batch_idx)
-                        torch.cuda.synchronize()
-                        end_time = time.time()
-                        batch_idx, batch = next(train_iter)
-                        if do_save:
-                            if not os.path.exists("/workspace/exps/be_infer/"):
-                                os.system(f"mkdir /workspace/exps/be_infer/")
-                            with open(f"/workspace/exps/be_infer/{file_name}.txt",'a') as f:
-                                f.write(f"{(end_time-start_time)*1000}, {trial}\n")
+                        with torch.no_grad():
+                            print(f"be infer warmup end {batch_idx}")
+                            start_time = time.time()
+                            # torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
+                            print("be_infer start")
+                            output = model(gpu_data)
+                            # torch.cuda.nvtx.range_pop()
+                            print("be_infer end and block")
+                            block(backend_lib, batch_idx)
+                            torch.cuda.synchronize()
+                            end_time = time.time()
+                            time.sleep(json_data[batch_idx])
+
+                            batch_idx, batch = next(train_iter)
+                            if do_save:
+                                if not os.path.exists("/workspace/exps/be_infer/"):
+                                    os.system(f"mkdir /workspace/exps/be_infer/")
+                                with open(f"/workspace/exps/be_infer/{file_name}.txt",'a') as f:
+                                    f.write(f"{(end_time-start_time)*1000}, {trial}\n")
                     else:
-                        print("AAAAAAAAAAAAAAAAAAAAAAAAAA")
-                        torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
-                        output = model(gpu_data)
-                        torch.cuda.nvtx.range_pop()
-                        block(backend_lib, batch_idx)
-                        batch_idx, batch = next(train_iter)
-                        if (batch_idx == 1): # for backward
-                            barriers[0].wait()
-                        if batch_idx == 10: # for warmup
-                            barriers[0].wait()
+                        with torch.no_grad():
+                            # torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
+                            print(f"be infer warmup {batch_idx}")
+                            output = model(gpu_data)
+                            # torch.cuda.nvtx.range_pop()
+                            block(backend_lib, batch_idx)
+                            print("be infer end")
+                            batch_idx, batch = next(train_iter)
+                            if (batch_idx == 1): # for backward
+                                barriers[0].wait()
+                            if batch_idx == 10: # for warmup
+                                barriers[0].wait()
                         
                     if check_stop(backend_lib):
                         print("----be_infer STOP! by orion")
@@ -214,11 +224,10 @@ def imagenet_loop(
                             warmup_flag = False
                             request_start = time.time()
                         if warmup_flag: 
-                            print("infer s")
+                            print("rt start")
                             output = model(gpu_data)
                             block(backend_lib, batch_idx)
-                            print("infer e")
-                            
+                            print("rt end")
                             batch_idx,batch = next(train_iter)
                             
                             if (batch_idx == 1 or (batch_idx == 10)):
@@ -248,13 +257,13 @@ def imagenet_loop(
                             if(batch_idx == num_iters-1):
                                 request_end = time.time()
                                 if do_save:
-                                    with open(f"/workspace/exps/{file_name}_total.log",'a') as f:
+                                    with open(f"/workspace/exps/{file_name}_total_with{train}.log",'a') as f:
                                         wall_clock_time = request_end - request_start
                                         f.write(f"{wall_clock_time}, {trial}\n")
                                     
                             req_.end_time = end_time
                             if do_save:
-                                with open(f"/workspace/exps/{file_name}.txt",'a') as f:
+                                with open(f"/workspace/exps/{file_name}_with{train}.txt",'a') as f:
                                     if is_passed:
                                         f.write(f"passed, {queuing_delay}, {trial}\n")
                                     else:
