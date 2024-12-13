@@ -75,7 +75,7 @@ def imagenet_loop(
     request_queue=None,
     file_name=None
 ):
-
+    print(f"num_iters!!!!!! : {num_iters} ")
     seed_everything(time.time_ns() % 10**9)
     
     backend_lib = cdll.LoadLibrary(os.path.expanduser('~') + "/orion/src/cuda_capture/libinttemp.so")
@@ -128,7 +128,6 @@ def imagenet_loop(
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
                     print("TRAIN!!!!")
                     if warmup_event.is_set():
-                        print("train sssss")
                         start_time = time.time()
                         optimizer.zero_grad()
                         output = model(gpu_data)
@@ -180,10 +179,8 @@ def imagenet_loop(
                             print(f"be infer warmup end {batch_idx}")
                             start_time = time.time()
                             # torch.cuda.nvtx.range_push(f"be_infer_{batch_idx}")
-                            print("be_infer start")
                             output = model(gpu_data)
                             # torch.cuda.nvtx.range_pop()
-                            print("be_infer end and block")
                             block(backend_lib, batch_idx)
                             torch.cuda.synchronize()
                             end_time = time.time()
@@ -235,6 +232,7 @@ def imagenet_loop(
                         else:
                             queuing_delay = 0
                             is_passed = False
+                            print(f"rt start {batch_idx} {warmup_flag}_______________________________________________________________________________")
                             if batch_idx == 200:
                                 rps_start_barrier.wait()
                                 warmup_event.set()
