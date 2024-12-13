@@ -17,7 +17,7 @@ volatile bool** client_request_status;
 volatile bool* client_stop;
 volatile bool* client_stop_ack;
 volatile bool* affinity_set;
-
+int* num_client_cur_iters;
 
 cudaError_t (*kernel_func)(const void* func, dim3 gridDim, dim3 blockDim, void** args, size_t sharedMem, cudaStream_t stream) = NULL;
 cudaError_t (*memcpy_func)(void* dst, const void* src, size_t count, enum cudaMemcpyKind kind) = NULL;
@@ -124,9 +124,14 @@ DEBUG_PRINT("\n");
 extern "C" {
 	void block(int it) {
 		int idx = get_idx();
+		printf("block %d\n", it);
 		assert (idx >= 0);
 		volatile bool* status_ar = client_request_status[idx];
-		while (!status_ar[it]);
+		if(it != -1) {
+			while (!status_ar[it]);
+		} else {
+			num_client_cur_iters[idx] += 1;
+		}
 	}
 
 	bool stop() {

@@ -2,30 +2,35 @@ import time
 from torchvision import models
 import torch
 
-data = torch.randn(1, 3, 224, 224, device=torch.device("cuda"))
-data = torch.ones([1, 3, 224, 224], pin_memory=True).to(0)
-target = torch.ones([1], pin_memory=True).to(torch.long).to(0)
+data = torch.randn(8, 3, 224, 224, device=torch.device("cuda"))
 
+model_names = ["mnasnet1_3", "shufflenet_v2_x2_0", "squeezenet1_1", "mobilenet_v3_large"]
 
-model_names = ["densenet121", "resnet50", "mobilenet_v3_large", "efficientnet_v2_m"]
-model_names = ["efficientnet_v2_m"]
 for model_name in model_names:
+    print("aa")
     model = models.__dict__[model_name](num_classes=1000)
-    model = model.to(0)
+    model = model.cuda()
+    
+    
+    for _ in range(3):
+        model(data)
 
-    model.eval()
+    # g = torch.cuda.CUDAGraph()
+    
+    
+    # with torch.cuda.graph(g):
+    #     static_output = model(data)
+    
+    # print("start")
+    # torch.cuda.synchronize()
+    # durs = []
 
-    times = []
-    with torch.no_grad():
-        for _ in range(10):
-            output = model(data)
 
-        for _ in range(100):
-            start = time.time()
-            output = model(data)
-            torch.cuda.synchronize()
-            end = time.time()
-            times.append((end-start)*1000)
 
-    print(f"{model_name},{sum(times[90:])/10}!!!")
 
+    # for _ in range(100):
+    #     start = time.time()
+    #     g.replay()
+    #     end = time.time()
+    #     durs.append((end-start)*1000)
+    # print(f"{model_name},{sum(durs[90:])/10}!!!")

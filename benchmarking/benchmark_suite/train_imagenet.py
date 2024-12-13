@@ -18,6 +18,7 @@ import argparse
 import threading
 import json
 from ctypes import *
+import time
 
 
         
@@ -116,7 +117,8 @@ def imagenet_loop(
     #             sleep_times = [1/rps]*(num_iters)
     #         else:
     #             sleep_times = np.random.exponential(scale=1/rps, size=num_iters)
-               
+    
+    dp_durs = [3586.33, 3195.304, 3388.155, 2993.875, 3251.472, 0]
     if True:
         timings=[]
         for i in range(1):
@@ -142,7 +144,7 @@ def imagenet_loop(
                             if not os.path.exists("/workspace/exps/train/"):
                                 os.system(f"mkdir /workspace/exps/train/")
                             with open(f"/workspace/exps/train/{file_name}.txt",'a') as f:
-                                f.write(f"{(end_time-start_time)*1000}, {trial}\n")
+                                f.write(f"{(end_time-start_time)*1000}, {time.time()}  {trial}\n")
                     else:
                         optimizer.zero_grad()
                         output = model(gpu_data)
@@ -165,8 +167,8 @@ def imagenet_loop(
                         break
                 elif train=="be_infer":
                     gpu_data, gpu_target = batch[0].to(local_rank), batch[1].to(local_rank)
-                    if rps > 0:
-                        json_data = np.random.exponential(scale=1/rps, size=10000)
+                    # if rps > 0:
+                        # json_data = np.random.exponential(scale=1/rps, size=10000)
 
                         # path = f"/workspace/benchmarking/overall_test/arrival_intervals/arrival_intervals_Bbe-rps{rps}-reqs10000-num0.json"
                         # with open(path, "r") as json_file:
@@ -214,17 +216,17 @@ def imagenet_loop(
                         break
                     
                 else: #infer
+                    start_event_task = torch.cuda.Event(enable_timing=True)
+                    end_event_task = torch.cuda.Event(enable_timing=True)
                     with torch.no_grad():
                         if not (batch_idx-200) % 10 :
                             print(batch_idx - 200)
                         if batch_idx == 200:
                             warmup_flag = False
-                            request_start = time.time()
                         if warmup_flag: 
-                            print("rt start")
+                            print(f"rt start {batch_idx} {warmup_flag}_______________________________________________________________________________")
                             output = model(gpu_data)
                             block(backend_lib, batch_idx)
-                            print("rt end")
                             batch_idx,batch = next(train_iter)
                             
                             if (batch_idx == 1 or (batch_idx == 10)):
@@ -232,21 +234,28 @@ def imagenet_loop(
                         else:
                             queuing_delay = 0
                             is_passed = False
-                            print(f"rt start {batch_idx} {warmup_flag}_______________________________________________________________________________")
                             if batch_idx == 200:
                                 rps_start_barrier.wait()
                                 warmup_event.set()
                             req_ = request_queue.get()
+                            # print(f"rt start {batch_idx} {warmup_flag} {req_.start_time}_______________________________________________________________________________")
+
+                            if batch_idx == 200:
+                                request_start = time.time()
                             start_time = time.time()
                             if batch_idx != 200:
                                 queuing_delay = (start_time - req_.start_time)*1000
-                                
+                                if(batch_idx == 201):
+                                    start_data = req_.start_time
+                                if(batch_idx == num_iters-1):
+                                    end_data = req_.start_time
+                                    # print(f"{end_data-start_data} {start_data} {end_data} {batch_idx} {num_iters}__________________________")
                             if queuing_delay < latency_bound:
                                 output = model(gpu_data)
                                 block(backend_lib, batch_idx)
                             else:
                                 is_passed = True
-                                block(backend_lib, -1)
+                                block(backend_lib, -1) 
                             torch.cuda.synchronize()        
                             end_time = time.time()
                             batch_idx,batch = next(train_iter)
@@ -263,14 +272,14 @@ def imagenet_loop(
                             if do_save:
                                 with open(f"/workspace/exps/{file_name}_with{train}.txt",'a') as f:
                                     if is_passed:
-                                        f.write(f"passed, {queuing_delay}, {trial}\n")
+                                        f.write(f"passed,0,{queuing_delay},{time.time()}, {trial}\n")
                                     else:
-                                        f.write(f"{req_.get_duration()},{(end_time-start_time)*1000}, {queuing_delay}, {trial}\n")
+                                        f.write(f"{req_.get_duration()},{(end_time-start_time)*1000}, {queuing_delay}, {time.time()}, {trial}\n")
                             
                                     
                             if check_stop(backend_lib):
                                 print("----Infer STOP! by orion")
-                                break
+                                break   
                             if end_event.is_set():
                                 print("----Infer STOP! by event")
                                 break

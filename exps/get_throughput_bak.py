@@ -1,6 +1,7 @@
 import glob
 
-for file in glob.glob("./train/re/*.txt"):
+for file in glob.glob("./train/*.txt"):
+    
     through_sum = 0
     num = 0
 
@@ -18,39 +19,29 @@ for file in glob.glob("./train/re/*.txt"):
     data_num = 0
     data_list = []
     for line in lines:
-        # if (data_num != int(line.split(",")[-1])):
-            # break
-            # data_num = int(line.split(",")[-1])
-            # through_sum_list.append({})
-            # through_sum_list[-1]["through_sum"] = 0
-            # through_sum_list[-1]["data_num"] = 0
+        
+        if (data_num != int(line.split(",")[-1])):
+            break
+            data_num = int(line.split(",")[-1])
+            through_sum_list.append({})
+            through_sum_list[-1]["through_sum"] = 0
+            through_sum_list[-1]["data_num"] = 0
 
-        data = float(line.split(",")[0])
+        data = float(line.split(",")[0])/1000
         data_list.append(data)
-    
-    total_time = 0 
-    log_file = file.replace("./train/re/", "./exp_re/").replace(".txt", "_total_withinfer.log")\
+        
+        if "vit" in train or  "swin" in train:
+            through_sum_list[-1]["through_sum"] += 8/data
+            through_sum_list[-1]["data_num"] += 1
+        else:
+            through_sum_list[-1]["through_sum"] += 64/data
+            through_sum_list[-1]["data_num"] += 1
 
-    try:
-        with open(log_file, 'r') as f:
-            total_time = float(f.readline().strip().split(',')[0])
-    except:
-        print(f"Could not read log file: {log_file}")
-        total_time = 0
-    if total_time == 0:
-        continue
-    # if "vit" in train or  "swin" in train:
-    #     through_sum_list[-1]["through_sum"] += 8/data_sum
-    #     through_sum_list[-1]["data_num"] += 1
-    # else:
-    #     through_sum_list[-1]["through_sum"] += 64/data_sum
-    #     through_sum_list[-1]["data_num"] += 1
+    through_sum = 0
+    for t in through_sum_list:
+        through_sum += t["through_sum"]/t["data_num"]
 
-    # through_sum = 0
-    # for t in through_sum_list:
-    #     through_sum += t["through_sum"]/t["data_num"]
-
-    print(f"{file}, {len(data_list)/total_time}, {len(data_list)}, {total_time}")
+    print(f"{file}, {through_sum/len(through_sum_list)}, {len(through_sum_list)}")
     # print(f"{file}, {sum(data_list)}, {through_sum_list[0]['data_num']}")
 
 ##NEW

@@ -6,7 +6,6 @@ from ctypes import *
 import os
 import sys
 import numpy as np
-import pandas as pd
 
 import json
 
@@ -163,44 +162,25 @@ def launch_jobs(config_dict_list, input_args, run_eval):
     #     json_data = json.load(json_file)
     # rps_start_barrier.wait()
     # print(f"RPS-{rps} READY!!!")
+    # st_time = time.time()
+    # req = Request(0, st_time)
+    # request_queue.put(req)
     # for idx, data in enumerate(json_data):
     #     time.sleep(float(data))
     #     st_time = time.time()
     #     req = Request(idx, st_time)
     #     request_queue.put(req)
 
-    # interval = 1/rps
-    # arrival_times = pd.read_csv(f"/workspace/exps/be_infer/{model_names[1]}_{rps}.csv")
-    # arrival_times = pd.read_csv(f"/workspace/benchmarking/azure_mid_rps/{model_names[1]}_rps.csv")['interval'].tolist()
-
-    with open(f"/workspace/exps/be_infer/traces-rps{rps}-reqs5000-num{input_args.trial}.json", "r") as f:
-        arrival_times = pd.read_json(f)
-        
-    # arrival_times = np.random.uniform(interval - interval*0.25, interval + interval*0.25, 20000).tolist()
+    interval = 1/rps
+    arrival_times = np.random.uniform(interval - interval*0.25, interval + interval*0.25, 2000).tolist()
     rps_start_barrier.wait()
-    print(f"RPS-{rps} {num_iters[1]} READY!!!")
+    print(f"RPS-{rps} READY!!!")
     for id in range(num_iters[1]-200):
-        # if id < 918*2 :
-        #     sleep_time =  1/43.7
-        # elif id < 1706*2:
-        #     sleep_time =  1/38.07
-        # elif id < 2476*2:
-        #     sleep_time =  1/38.17
-        # elif id < 3272*2:
-        #     sleep_time =  1/42.147
-        # elif id < 4196*2:
-        #     sleep_time =  1/40.0
-        # else:
-        #     sleep_time =  1/47.11
         st_time = time.time()
         req = Request(id, st_time)
         request_queue.put(req)
-        # print(f"arriv[al_times[{id}] = {arrival_times['0'][id]}")
-        time.sleep(arrival_times[0][id])
-        # time.sleep(sleep_time)
-        # time.sleep(arrival_times[id])
+        time.sleep(arrival_times[id])
         
-    print("all requests sent!")
     for thread in threads:
         thread.join()
 

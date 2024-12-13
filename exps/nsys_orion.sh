@@ -1,1 +1,0 @@
-/usr/local/bin/nsys profile -t cuda,osrt,nvtx,cudnn,cublas -o orion_check -w true -f true python3.8 run_orion.py

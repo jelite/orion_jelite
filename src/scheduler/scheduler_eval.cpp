@@ -5,11 +5,11 @@ using namespace std;
 
 // globals
 void* klib;
-vector<vector<op_info>> iop_info_vector;
+vector<vector<op_info>> op_info_vector;
 int* fidx;
 int* num_client_kernels;
 int* num_client_max_iters;
-int* num_client_cur_iters;
+extern int* num_client_cur_iters;
 bool* locked;
 
 std::chrono::time_point<std::chrono::high_resolution_clock>* client_starts;
@@ -396,7 +396,7 @@ void* Scheduler::busy_wait_profile(int num_clients, int iter, bool warmup, int w
 				bool ready = true;
 				if (seq) {
 					if (event_ids[0] >= 1) {
-						printf("seq")
+						printf("seq");
 						if (cudaEventQuery(*(events[0][event_ids[0]-1])) != cudaSuccess)
 							ready &= false;
 					}
@@ -404,7 +404,6 @@ void* Scheduler::busy_wait_profile(int num_clients, int iter, bool warmup, int w
 				else {
 					if (event_ids[i] >= 1) {
 						if (cudaEventQuery(*(events[i][event_ids[i]-1])) != cudaSuccess)
-							prinf("%d : EVENT", i);
 							ready &= false;
 					}
 				}
@@ -416,6 +415,7 @@ void* Scheduler::busy_wait_profile(int num_clients, int iter, bool warmup, int w
 					event_ids[i] = 0;
 					streams[i] = -1;
 					fidx[i] = 0;
+					printf("num_client_cur_iters[i] is %d\n", num_client_cur_iters[i]);
 					request_status[i][num_client_cur_iters[i]] = true;
 					//printf("UNLOCK CLIENT %d\n", i);
 					pthread_mutex_unlock(client_mutexes[i]);

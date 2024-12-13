@@ -1,6 +1,7 @@
 import json
+import pandas as pd
 
-path = './overall_test/arrival_times-rps85.05-reqs2000-num0.json'
-with open(path, "r") as json_file:
-        json_data = json.load(json_file)
-print(json_data[0])
+with open(f"/workspace/exps/be_infer/traces-rps85.05-reqs5000-num{0}.json", "r") as f:
+    arrival_times = pd.read_json(f)
+
+import pdb; pdb.set_trace()
